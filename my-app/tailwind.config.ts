@@ -15,9 +15,13 @@ const config: Config = {
       },
       colors: {
         'main-navy' : '#0d1c4b',
+        'main-blue' : '#243d8d',
+        'error' : '#d01e17'
       }
     },
   },
-  plugins: [],
+  plugins: [
+    require('@tailwindcss/forms')
+  ],
 };
 export default config;
