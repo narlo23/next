@@ -38,7 +38,7 @@ export default function Check() {
 
     return (
         <div className="h-screen w-screen bg-gray-50 flex flex-col">
-            <Header />
+            <Header pad="pl-4"/>
             <div className="flex text-main-navy justify-center flex-1">
                 <div className="w-80 h-full flex flex-col items-center justify-center">
                     <p className="text-2xl font-bold mb-5">STEP 1/2 - 본인 확인</p>

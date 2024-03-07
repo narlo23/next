@@ -16,7 +16,9 @@ const config: Config = {
       colors: {
         'main-navy' : '#0d1c4b',
         'main-blue' : '#243d8d',
-        'error' : '#d01e17'
+        'error' : '#d01e17',
+        'border-gray' : '#e5e7eb',
+        'active-blue' : '#e4e8f9'
       }
     },
   },

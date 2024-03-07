@@ -2,16 +2,18 @@
 
 import React, { useRef, useState } from "react";
 import Image from "next/image";
-import { IconButton, InputLabel, OutlinedInput, TextField} from "@mui/material";
+import { IconButton, InputLabel} from "@mui/material";
 import { VisibilityOff, Visibility } from "@mui/icons-material";
 import { Button } from "@mui/material"
 import {ExclamationCircleIcon} from '@heroicons/react/20/solid'
+import { useRouter } from "next/navigation";
 
 export default function Login() {
     const idRef = useRef<any>(null);
     const pwRef = useRef<any>(null);
     const [errorText, setErrorText] = useState(["", ""])
     const [showPassword, setShowPassword] = useState(false)
+    const router = useRouter()
 
     const handleClickShowPassword = () => setShowPassword((show) => !show);
 
@@ -26,6 +28,7 @@ export default function Login() {
 
             if (currentId !== "" && currentPw !== "") {
                 // 대시보드로 이동
+                router.push("/pages/dashboard")
             }
 
             let newErrorText = [...errorText]
