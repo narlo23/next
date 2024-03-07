@@ -28,18 +28,22 @@ export default function DashBoard() {
         console.log(modal)
     }, [modal])
 
+
+    
     useEffect(() => {
         const handleClickOutside=(e:any)=> {
-            if (ref && ref.current && !ref.current.contains(e.target as Node)) {
+            console.log(e.currentTarget)
+            if (modal && (!ref.current || !ref.current.contains(e.target))){
                 setModal(false)
             }
         }
 
-        document.addEventListener('click', handleClickOutside);
+        document.addEventListener('mousedown', handleClickOutside);
         return () => {
-            document.removeEventListener('click', handleClickOutside)
+            document.removeEventListener('mousedown', handleClickOutside)
         }
-    }, [])
+    }, [modal])
+    
 
     return (
         <div className="h-screen w-screen bg-gray-50 flex flex-col">
@@ -52,10 +56,13 @@ export default function DashBoard() {
                             </div>
                         </Button>
                     </Link>
-                    <div className="cursor-pointer relative" onClick={(e:React.MouseEvent<HTMLElement, MouseEvent>) => {
-                        setModal(!modal)
-                    }}>
-                        <UserCircleIcon width={36}/>
+                    <div className="cursor-pointer relative">
+                        <div onMouseDown={(e:any) => {
+                            e.stopPropagation()
+                            setModal(!modal)
+                    }   }>
+                            <UserCircleIcon width={36}/>
+                        </div>
                         {
                             modal && (
                                 <div className="z-20 absolute flex flex-col justify-center right-0 mt-6 w-[192px] h-[116px] bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 text-sm" ref={ref}>
