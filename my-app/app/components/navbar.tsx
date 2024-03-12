@@ -1,0 +1,78 @@
+'use client'
+
+import React from "react"
+import { MenuItem, ServiceMenuItem } from "../constants/data"
+import { useState } from "react"
+import {ArrowTopRightOnSquareIcon, ChevronUpIcon, ChevronDownIcon} from "@heroicons/react/20/solid";
+
+export default function Navbar() {
+    const [open, setOpen] = useState(Array(MenuItem.length).fill(true))
+
+    const ShowDetail = (e:React.MouseEvent<HTMLElement, MouseEvent>) => {
+        const i = Number(e.currentTarget.dataset.id)
+        if (i) {
+            setOpen(open.map((item, idx) => {
+                if (idx === i) {
+                    return !item
+                }
+                return item
+            }))
+        }
+    }
+
+    return (
+        <div className="z-10 w-64 h-full bg-white pb-4 overflow-y-auto border-r border-border-gray flex flex-col">
+                <nav className="mt-2 flex-1 text-main-navy ">
+                    {
+                        MenuItem.map((menu, i) => {
+                            return (
+                                <div key={i}>
+                                    <div key={menu.id} className="hover:bg-active-blue hover:text-gray-900 pl-4 h-10 flex items-center px-4 py-2 text-main-navy text-md font-bold">
+                                    <p className="w-full">{menu.name}</p>
+                                    {
+                                        menu.detail.length > 0 && (
+                                            open[i] ? (
+                                                <div data-id={i} className="cursor-pointer" onClick={ShowDetail}><ChevronUpIcon width={16} color="rgb(156, 163, 175)"/></div>
+                                            ) : (
+                                                <div data-id={i} className="cursor-pointer" onClick={ShowDetail}><ChevronDownIcon width={16} color="rgb(156, 163, 175)"/></div>
+                                            )
+                                        )
+                                    }
+                                </div>
+                                {
+                                    menu.detail.length > 0 && open[i] && (
+                                        menu.detail.map((m) => {
+                                            return <div key={m.id} className="hover:bg-gray-50 hover:text-gray-900 h-9 flex items-center p-2 pl-11 text-main-navy text-sm">
+                                                <a className="w-full" href={m.link}>{m.name}</a>
+                                            </div>
+                                        })
+                                    )
+                                }
+                                </div>
+                                
+                            )
+                        })
+                    }
+                </nav>
+                <nav className="px-4 pb-4">
+                    <div className="text-xs mb-2 font-bold text-gray-400">
+                        연결 서비스
+                    </div>
+                    <div className="text-main-navy font-bold text-sm">
+                        {
+                            ServiceMenuItem.map((service) => {
+                                return (
+                                    <div key={service.id} className="h-8 flex">
+                                        <a className="flex items-center w-full" href={service.link} target="_blank">
+                                            <p className="flex-1">{service.name}</p>
+                                            <ArrowTopRightOnSquareIcon width={20} className="text-gray-300"/>
+                                        </a>
+                                    </div>
+                                )
+                            })
+                        }
+                    </div>
+                </nav>
+            </div>
+    )
+}

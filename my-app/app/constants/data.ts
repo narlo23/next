@@ -11,7 +11,7 @@ export const MenuItem = [
             {
                 'id' : 'user',
                 'name' : '사용자',
-                'link' : '',
+                'link' : '/pages/users',
                 'detail' : []
             },
             {
