@@ -4,7 +4,8 @@ import React, { useState } from "react";
 import MainHeader from "@/app/components/mainheader";
 import Navbar from "@/app/components/navbar";
 import { useEffect } from "react";
-import { getUsers } from "@/app/apis/data";
+import { deleteUser, getUsers } from "@/app/apis/data";
+import { Button } from "@mui/material";
 
 export default function User() {
     const [users, setUsers] = useState([{
@@ -22,24 +23,61 @@ export default function User() {
         'createdAt' : '',
         'updatedAt' : ''
     }])
+    const [allChecked, setAllChecked] = useState(false)
+    const [checked, setChecked] = useState<boolean[]>([])
 
     useEffect(() => {
         const fetchUserList = async () => {
             const usersData = await getUsers()
             setUsers(usersData)
+            setChecked(Array(usersData.length).fill(false))
         }
         fetchUserList()
     }, [])
+
+    const ChangeCheckVal = (e:React.ChangeEvent<HTMLInputElement>) => {
+        const idx = Number(e.target.dataset.idx)
+        if (idx !== undefined) {
+            let newArr = [...checked]
+            newArr[idx] = !newArr[idx]
+            setChecked(newArr)
+            if (!newArr.includes(false)) {
+                setAllChecked(true)
+            } else {
+                setAllChecked(false)
+            }
+        }
+    }
+
+    const AllChangeCheckVal = (e:React.ChangeEvent<HTMLInputElement>) => {
+        if (allChecked) {
+            setAllChecked(false)
+            setChecked(Array(checked.length).fill(false))
+        } else {
+            setAllChecked(true)
+            setChecked(Array(checked.length).fill(true))
+        }
+    }
+
+    const DeleteUser = () => {
+        checked.map((c, i) => {
+            if (c) {
+                deleteUser(i+1)
+            }
+        })
+    }
 
     return (
         <div className="h-screen w-screen bg-gray-50 flex flex-col">
             <MainHeader />
             <div className="w-full h-full flex">
                 <Navbar />
-                <div className="w-full text-main-navy text-xs flex justify-center p-5">
+                <div className="w-full text-main-navy text-xs flex flex-col justify-center p-5">
+                    <div>
                     <table className="text-center w-full h-[500px]">
                         <thead>
                             <tr>
+                                <th><input type="checkbox" checked={allChecked} onChange={AllChangeCheckVal}/></th>
                                 <th>id</th>
                                 <th>이름</th>
                                 <th>사용자명</th>
@@ -54,9 +92,10 @@ export default function User() {
                         </thead>
                         <tbody>
                         {
-                            users.map((user, i) => {
+                            users && users.length > 0 && users.map((user, i) => {
                                 return (
                                     <tr key={i}>
+                                        <td><input data-idx={i} type="checkbox" checked={checked[i]} onChange={ChangeCheckVal}/></td>
                                         <td>{user.id}</td>
                                         <td>{user.name}</td>
                                         <td>{user.username}</td>
@@ -73,6 +112,10 @@ export default function User() {
                         }
                         </tbody>
                     </table>
+                    </div>
+                    <div>
+                        <Button variant="contained" className="text-main-navy hover:text-white" onClick={DeleteUser}>삭제</Button>
+                    </div>
                 </div>
             </div>
         </div>

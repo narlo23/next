@@ -68,3 +68,17 @@ export const deleteUser = async (id:number) => {
         return e.message
     }
 }
+
+/* 웹사이트 meta data */
+export const getMetaData = async (url:string) => {
+    try {
+        const params = {
+            url: decodeURI(url),
+            meta: true
+        }
+        const res = await axios.get("https://api.microlink.io", {params: params})
+        return res.data
+    } catch(e:any) {
+        return e.message
+    }
+}
