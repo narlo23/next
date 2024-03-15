@@ -18,7 +18,9 @@ const config: Config = {
         'main-blue' : '#243d8d',
         'error' : '#d01e17',
         'border-gray' : '#e5e7eb',
-        'active-blue' : '#e4e8f9'
+        'active-blue' : '#e4e8f9',
+        'secondary' : '#122e87',
+        'danger' : '#ff4d26'
       }
     },
   },

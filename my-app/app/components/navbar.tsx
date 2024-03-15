@@ -4,6 +4,7 @@ import React from "react"
 import { MenuItem, ServiceMenuItem } from "../constants/data"
 import { useState } from "react"
 import {ArrowTopRightOnSquareIcon, ChevronUpIcon, ChevronDownIcon} from "@heroicons/react/20/solid";
+import Image from "next/image";
 
 export default function Navbar() {
     const [open, setOpen] = useState(Array(MenuItem.length).fill(true))
@@ -21,13 +22,14 @@ export default function Navbar() {
     }
 
     return (
-        <div className="z-10 w-64 h-full bg-white pb-4 overflow-y-auto border-r border-border-gray flex flex-col">
+        <div className="flex-1 z-10 w-64 bg-white pb-4 overflow-y-auto flex flex-col">
                 <nav className="mt-2 flex-1 text-main-navy ">
                     {
                         MenuItem.map((menu, i) => {
                             return (
                                 <div key={i}>
                                     <div key={menu.id} className="hover:bg-active-blue hover:text-gray-900 pl-4 h-10 flex items-center px-4 py-2 text-main-navy text-md font-bold">
+                                    <Image src={menu.icon} width={20} height={20} className="mr-2" alt={menu.name}></Image>
                                     <p className="w-full">{menu.name}</p>
                                     {
                                         menu.detail.length > 0 && (
@@ -64,7 +66,8 @@ export default function Navbar() {
                                 return (
                                     <div key={service.id} className="h-8 flex">
                                         <a className="flex items-center w-full" href={service.link} target="_blank">
-                                            <p className="flex-1">{service.name}</p>
+                                            <img src={service.icon} alt="icon" width={20}/>
+                                            <p className="flex-1 ml-3">{service.name}</p>
                                             <ArrowTopRightOnSquareIcon width={20} className="text-gray-300"/>
                                         </a>
                                     </div>

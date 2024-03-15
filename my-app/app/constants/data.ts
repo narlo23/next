@@ -1,11 +1,13 @@
 export const MenuItem = [
     {
         'id' : 'dashboard',
+        'icon': '/dashboard.svg',
         'name' : '대시보드',
         'detail' : []
     },
     {
         'id' : 'group',
+        'icon': '/group.svg',
         'name' : '조직',
         'detail' : [
             {
@@ -30,6 +32,7 @@ export const MenuItem = [
     },
     {
         'id' : 'operate',
+        'icon': '/operate.svg',
         'name' : '운영',
         'detail' : [
             {
@@ -48,6 +51,7 @@ export const MenuItem = [
     },
     {
         'id' : 'service',
+        'icon': '/service.svg',
         'name' : '서비스',
         'detail' : [
             {
@@ -75,13 +79,13 @@ export const MenuItem = [
 export const ServiceMenuItem = [
     {
         'id' : 'office_wave',
-        'icon': '',
+        'icon': 'https://dev-org.officenext.net/_next/image?url=https%3A%2F%2Fdev-api.jmember.co.kr%2Fapi%2Fimages%2F417c3f64-4b22-41ee-a852-b4a7767c3277&w=96&q=75',
         'name' : '오피스웨이브',
         'link' : 'https://admin.officewave.co.kr/login'
     },
     {
         'id' : 'office_note',
-        'icon' : '',
+        'icon' : 'https://dev-org.officenext.net/_next/image?url=https%3A%2F%2Fdev-api.jmember.co.kr%2Fapi%2Fimages%2Ffa4038bc-54b8-4502-91df-dd8d5d57e757&w=96&q=75',
         'name' : '오피스노트',
         'link' : 'https://www.officenote.co.kr/dashboard'
     }
