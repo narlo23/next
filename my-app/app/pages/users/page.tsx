@@ -1,10 +1,10 @@
 'use client'
 
 import React, { useState } from "react";
-import MainHeader from "@/app/components/mainheader";
-import Navbar from "@/app/components/navbar";
+import MainHeader from "@/app/src/components/mainheader";
+import Navbar from "@/app/src/components/navbar";
 import { useEffect } from "react";
-import { deleteUser, getUsers } from "@/app/apis/data";
+import { deleteUser, getUsers } from "@/app/src/api/user";
 import { Button } from "@mui/material";
 
 export default function User() {

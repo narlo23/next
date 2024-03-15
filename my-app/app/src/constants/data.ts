@@ -1,13 +1,13 @@
 export const MenuItem = [
     {
         'id' : 'dashboard',
-        'icon': '/dashboard.svg',
+        'icon': '/assets/nav/dashboard.svg',
         'name' : '대시보드',
         'detail' : []
     },
     {
         'id' : 'group',
-        'icon': '/group.svg',
+        'icon': '/assets/nav/group.svg',
         'name' : '조직',
         'detail' : [
             {
@@ -32,7 +32,7 @@ export const MenuItem = [
     },
     {
         'id' : 'operate',
-        'icon': '/operate.svg',
+        'icon': '/assets/nav/operate.svg',
         'name' : '운영',
         'detail' : [
             {
@@ -51,7 +51,7 @@ export const MenuItem = [
     },
     {
         'id' : 'service',
-        'icon': '/service.svg',
+        'icon': '/assets/nav/service.svg',
         'name' : '서비스',
         'detail' : [
             {

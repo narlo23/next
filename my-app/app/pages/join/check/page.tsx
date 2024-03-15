@@ -1,8 +1,8 @@
 "use client"
 
 import React, { useRef } from "react"
-import Header from "@/app/components/header"
-import Text from "@/app/components/text"
+import Header from "@/app/src/components/header"
+import Text from "@/app/src/components/text"
 import { Button } from "@mui/material"
 import {ExclamationCircleIcon} from '@heroicons/react/20/solid'
 

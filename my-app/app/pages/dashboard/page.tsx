@@ -4,15 +4,14 @@ import React, { useEffect, useState } from "react";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
-import Navbar from "@/app/components/navbar";
-import MainHeader from "@/app/components/mainheader";
+import Navbar from "@/app/src/components/navbar";
+import MainHeader from "@/app/src/components/mainheader";
 
 import { ExclamationCircleIcon, PlusIcon } from "@heroicons/react/20/solid";
-import { getMetaData } from "@/app/apis/data";
+import { getMetaData } from "@/app/src/api/user";
 import { ChevronRightIcon } from "@heroicons/react/20/solid";
 import { Button } from "@mui/material";
 import Slider from "react-slick";
-import Image from "next/image";
 
 export default function DashBoard() {
     const url = "https://www.youtube.com/watch?v=9P6rdqiybaw"
@@ -65,20 +64,20 @@ export default function DashBoard() {
                                 </div>
                                 <div className="grid grid-cols-[1fr_2fr]">
                                     <div className="mt-3">
-                                        <svg className="w-20 h-20" viewBox="0 0 80 80">
-                                            <defs>
-                                                <path id="shapeSquircle" d="M0.0219049 40.0042C0.0219049 40.0042 -1.00694 60.9621 11.0374 70.9399C17.6538 76.421 25.2281 80.1018 40.0042 79.9776C40.0042 79.9776 60.9621 81.0153 70.9399 68.9709C76.421 62.3545 80.1018 54.7802 79.9776 40.0042C79.9776 40.0042 81.0152 19.0463 68.9709 9.06847C62.3545 3.58731 54.7802 -0.102264 40.0042 0.0219041C40.0042 0.0219041 19.0374 -1.00692 9.06848 11.0374C3.58733 17.6893 -0.102264 25.237 0.0219049 40.0042Z">
-                                                </path>
-                                                <clipPath id="clipSquircle">
-                                                    <use href="#shapeSquircle"></use>
-                                                </clipPath>
-                                            </defs>
-                                            <rect className="fill-white-svg fill-gray-500" data-color="10" clipPath="url(#clipSquircle)" x="0" y="0" width="80" height="80">
-                                            </rect>
-                                            <text className="text-4xl font-bold fill-white" x="50%" y="50%" dy="12" textAnchor="middle">
-                                                F
-                                            </text>
-                                        </svg>
+                                    <svg className="w-20 h-20" viewBox="0 0 80 80">
+                                        <defs>
+                                            <path id="shapeSquircle" d="M0.0219049 40.0042C0.0219049 40.0042 -1.00694 60.9621 11.0374 70.9399C17.6538 76.421 25.2281 80.1018 40.0042 79.9776C40.0042 79.9776 60.9621 81.0153 70.9399 68.9709C76.421 62.3545 80.1018 54.7802 79.9776 40.0042C79.9776 40.0042 81.0152 19.0463 68.9709 9.06847C62.3545 3.58731 54.7802 -0.102264 40.0042 0.0219041C40.0042 0.0219041 19.0374 -1.00692 9.06848 11.0374C3.58733 17.6893 -0.102264 25.237 0.0219049 40.0042Z">
+                                            </path>
+                                            <clipPath id="clipSquircle">
+                                                <use href="#shapeSquircle"></use>
+                                            </clipPath>
+                                        </defs>
+                                        <rect className="fill-white-svg fill-gray-500" data-color="10" clipPath="url(#clipSquircle)" x="0" y="0" width="80" height="80">
+                                        </rect>
+                                        <text className="text-4xl font-bold fill-white" x="50%" y="50%" dy="12" textAnchor="middle">
+                                            F
+                                        </text>
+                                    </svg>
                                     </div>
                                     <div className="flex self-center mt-3 text-xl font-bold text-gray-500 gap-x-8">
                                         <div>Free 플랜</div>
@@ -149,8 +148,8 @@ export default function DashBoard() {
                             <div className="col-span-2 drop-shadow-sm bg-white border p-6 rounded-lg h-[254px]">
                                 <div className="w-full h-full">
                                     <Slider {...settings}>
-                                        <img src="/banner_1.png" alt="banner" className="rounded-lg"/>
-                                        <img src="/banner_2.png" alt="banner" className="rounded-lg"/>
+                                        <img src="/assets/banner/banner_1.png" alt="banner" className="rounded-lg"/>
+                                        <img src="/assets/banner/banner_2.png" alt="banner" className="rounded-lg"/>
                                     </Slider>
                                 </div>
                                 
