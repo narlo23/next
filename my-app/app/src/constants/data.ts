@@ -90,3 +90,14 @@ export const ServiceMenuItem = [
         'link' : 'https://www.officenote.co.kr/dashboard'
     }
 ]
+
+export const UserMenuItem = [
+    {
+        'id' : 'user-management',
+        'name' : '사용자 관리'
+    },
+    {
+        'id' : 'retirees-list',
+        'name' : '퇴직자 목록'
+    }
+]
