@@ -1,16 +1,16 @@
 'use client'
 
 import { Layout } from "@/app/src/components/layout";
-import { Button, Box, Pagination, Stack } from "@mui/material";
+import { Button, Box, Pagination, Stack, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Tooltip, Tabs, Tab } from "@mui/material";
 import React, { useEffect, useState } from "react";
 
 import { ArrowPathIcon, QuestionMarkCircleIcon, PlusIcon, BarsArrowDownIcon, BarsArrowUpIcon } from "@heroicons/react/20/solid";
-import { UserMenuItem } from "@/app/src/constants/data";
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import { DataGrid, GridActionsCellItem, GridActionsCellItemProps, GridColDef, GridRowId } from "@mui/x-data-grid";
 import { getUsers } from "@/app/src/api/user";
 import { DataGridProps } from "@mui/x-data-grid";
+import { PaginationProps } from "@mui/material";
 import {styled} from '@mui/material/styles'
-
+import DeleteIcon from '@mui/icons-material/Delete';
 
 interface UserData {
     id: number;
@@ -23,19 +23,33 @@ interface UserData {
 }
 
 export default function User() {
-    const [selectedMenu, setSelectedMenu] = useState('user-management')
+    const [selectedMenu, setSelectedMenu] = useState('user_management')
     const [userData, setUserData] = useState<UserData[] | null>(null)
-    const userCount = 2
+    const [date, setDate] = useState<string>()
+    const syncInfoText = `조직도 동기화란 변경된 조직도 정보를 연동 서비스에 적용하는 것을 말합니다.\n모든 변경된 정보는 동기화를 진행하셔야 연동 서비스에 반영됩니다.\n※ 조직도 정보 : 사용자 정보, 조직 정보, 관리자 정보`
 
     const CustomDataGrid = styled(DataGrid)<DataGridProps>(({theme}) => ({
         '& .MuiDataGrid-columnHeader' : {
-            backgroundColor: 'rgb(249, 250, 251)'
+            backgroundColor: 'rgb(249, 250, 251)',
+            borderTop: '1px solid rgb(209, 213, 219);',
         },
         '& .MuiDataGrid-columnHeaderTitle' : {
-            fontWeight: 500
+            fontWeight: 500,
+        },
+        '& .MuiDataGrid-root .MuiDataGrid-cell:focus-within' : {
+            outline: 'none !important'
         }
     }));
-    
+
+    const CustomPagination = styled(Pagination)<PaginationProps>(({theme}) => ({
+        '& .MuiPaginationItem-root' : {
+            borderRadius: '0.124rem'
+        },
+        '& .Mui-selected' : {
+            backgroundColor: 'white !important',
+            borderColor: 'rgb(18, 46, 135)'
+        }
+    }))
 
     const DateFormat = () => {
         const date = new Date()
@@ -53,13 +67,6 @@ export default function User() {
         result = result + ":" + (second >= 10 ? second : '0' + second);
 
         return result;
-    }
-
-    const ChangeSelectedMenu = (e:React.MouseEvent<HTMLElement, MouseEvent>) => {
-        const id = e.currentTarget.dataset.id;
-        if (id) {
-            setSelectedMenu(id);
-        }
     }
 
     const SortedDescendingIcon = () => {
@@ -86,9 +93,64 @@ export default function User() {
                 })
             })
             setUserData(newUsers)
+            setDate(DateFormat())
         }
         getUserData();
     }, [])
+
+    const handleChange = (event: React.SyntheticEvent, newValue: string) => {
+        setSelectedMenu(newValue);
+      };
+
+    const deleteUser = React.useCallback(
+        (id: GridRowId) => () => {
+          setTimeout(() => {
+            setUserData((prevRows) => {
+              return prevRows ? prevRows.filter((row) => row.id !== id) : [];
+            });
+          });
+        },
+        [],
+      );
+
+    function DeleteUserActionItem({
+        deleteUser,
+        ...props
+      }: GridActionsCellItemProps & { deleteUser: () => void }) {
+        const [open, setOpen] = React.useState(false);
+      
+        return (
+          <React.Fragment>
+            <GridActionsCellItem {...props} onClick={() => setOpen(true)} />
+            <Dialog
+              open={open}
+              onClose={() => setOpen(false)}
+              aria-labelledby="alert-dialog-title"
+              aria-describedby="alert-dialog-description"
+            >
+              <DialogTitle id="alert-dialog-title">Delete this user?</DialogTitle>
+              <DialogContent>
+                <DialogContentText id="alert-dialog-description">
+                  This action cannot be undone.
+                </DialogContentText>
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={() => setOpen(false)}>Cancel</Button>
+                <Button
+                  onClick={() => {
+                    setOpen(false);
+                    deleteUser();
+                  }}
+                  color="warning"
+                  autoFocus
+                >
+                  Delete
+                </Button>
+              </DialogActions>
+            </Dialog>
+          </React.Fragment>
+        );
+      }
 
     const columns: GridColDef[] = [
         {field: 'id', headerName: '아이디', headerClassName: 'user-table-header', headerAlign: 'center', align: 'center', flex: 1},
@@ -97,7 +159,22 @@ export default function User() {
         {field: 'phone', headerName: '전화번호', headerClassName: 'user-table-header', headerAlign: 'center', align: 'center', flex: 1},
         {field: 'email', headerName: '이메일', headerClassName: 'user-table-header', headerAlign: 'center', align: 'center', flex: 1},
         {field: 'address', headerName: '주소', headerClassName: 'user-table-header', headerAlign: 'center', align: 'center', flex: 1},
-        {field: 'createdAt', headerName: '등록일', headerClassName: 'user-table-header', headerAlign: 'center', align: 'center', flex: 1}
+        {field: 'createdAt', headerName: '등록일', headerClassName: 'user-table-header', headerAlign: 'center', align: 'center', flex: 1},
+        {
+            field: 'actions',
+            type: 'actions',
+            width: 80,
+            getActions: (params) => [
+              <DeleteUserActionItem
+                key={params.id}
+                label="Delete"
+                showInMenu
+                icon={<DeleteIcon />}
+                deleteUser={deleteUser(params.id)}
+                closeMenuOnClick={false}
+              />,
+            ],
+          },
     ]
 
     return (
@@ -111,8 +188,20 @@ export default function User() {
                             <div className="flex leading-4">조직도 동기화</div>
                         </Button>
                         <div className="text-gray-400 flex items-center">
-                            <QuestionMarkCircleIcon width={16} height={16} className="cursor-pointer" />
-                            <div className="ml-1 text-xs">마지막 동기화 일시 : {DateFormat()}</div>
+                            <Tooltip title={syncInfoText} placement="right" componentsProps={{
+                                tooltip: {
+                                    sx: {
+                                        bgcolor: 'white',
+                                        color: '#374151',
+                                        border: '1px solid rgb(229 231 235)',
+                                        maxWidth: 500,
+                                        whiteSpace: 'pre-wrap'
+                                    }
+                                }
+                            }}>
+                                <QuestionMarkCircleIcon width={16} height={16} className="cursor-pointer" />
+                            </Tooltip>
+                            <div className="ml-1 text-xs">마지막 동기화 일시 : {date}</div>
                         </div>                        
                     </div>
                     <div>
@@ -121,6 +210,7 @@ export default function User() {
                             <div className="flex leading-4">엑셀 일괄 등록</div></Button>
                     </div>
                 </div>
+                {/*
                 <nav className="flex">
                     {
                         UserMenuItem.map((userMenu) => {
@@ -137,9 +227,16 @@ export default function User() {
                     }
                     <div className="flex-1 border-b border-gray-200"></div>
                 </nav>
+                */}
+                <Box>
+                    <Tabs value={selectedMenu} onChange={handleChange}>
+                        <Tab label="사용자 관리" value="user_management"></Tab>
+                        <Tab label="퇴직자 목록" value="retirement_list"></Tab>
+                    </Tabs>
+                </Box>
                 <div className="mt-8 bg-white rounded-xl p-8 min-w-min">
                     <div className="mb-2 text-sm text-gray-800">
-                        총 {userCount}명
+                        총 {userData === null ? 0 : userData.length}명
                     </div>
                     <div className="flex justify-between items-center w-full mb-4">
                         <div className="flex">
@@ -157,16 +254,24 @@ export default function User() {
                             backgroundColor: 'rgb(249, 250, 251)',
                             color: '#374151',
                         }}}>
-                            <CustomDataGrid columns={columns} rows={userData} hideFooter disableColumnMenu sortingOrder={['asc', 'desc']} slots={{
+                            <CustomDataGrid columns={columns} rows={userData} hideFooter disableColumnMenu columnHeaderHeight={39} rowHeight={45} sortingOrder={['asc', 'desc']} slots={{
                                 columnSortedDescendingIcon: SortedDescendingIcon,
                                 columnSortedAscendingIcon: SortedAscendingIcon
-                            }}/>
+                            }} sx = {{
+                                '.MuiDataGrid-columnSeperator' : {
+                                    display: 'none'
+                                },
+                                '&.MuiDataGrid-root' : {
+                                    border: 'none'
+                                }
+                            }}
+                            />
                         </Box>)
                     }
 
                     <div className="flex items-center justify-center mt-6 w-full">
                         <Stack spacing={2}>
-                            <Pagination count={1} variant="outlined" shape="rounded"/>
+                            <CustomPagination count={1} variant="outlined" shape="rounded"/>
                         </Stack>
                     </div>
                 </div>

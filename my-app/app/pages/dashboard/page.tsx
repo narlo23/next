@@ -1,5 +1,5 @@
 'use client'
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
@@ -7,7 +7,6 @@ import "slick-carousel/slick/slick-theme.css";
 import { Layout } from "@/app/src/components/layout";
 
 import { ExclamationCircleIcon, PlusIcon } from "@heroicons/react/20/solid";
-import { getMetaData } from "@/app/src/api/user";
 import { ChevronRightIcon } from "@heroicons/react/20/solid";
 import { Button } from "@mui/material";
 import Slider from "react-slick";
