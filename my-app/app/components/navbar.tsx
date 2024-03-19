@@ -25,25 +25,25 @@ export default function Navbar() {
         <div className="flex-1 z-10 w-64 bg-white pb-4 overflow-y-auto flex flex-col">
                 <nav className="mt-2 flex-1 text-main-navy ">
                     {
-                        MenuItem.map((menu, i) => {
+                        MenuItem.map((menu:any, i:number) => {
                             return (
-                                <div key={i}>
+                                <div key={i} data-id={i} onClick={ShowDetail} className="cursor-pointer">
                                     <div key={menu.id} className="hover:bg-active-blue hover:text-gray-900 pl-4 h-10 flex items-center px-4 py-2 text-main-navy text-md font-bold">
                                     <Image src={menu.icon} width={20} height={20} className="mr-2" alt={menu.name}></Image>
                                     <p className="w-full">{menu.name}</p>
                                     {
                                         menu.detail.length > 0 && (
                                             open[i] ? (
-                                                <div data-id={i} className="cursor-pointer" onClick={ShowDetail}><ChevronUpIcon width={16} color="rgb(156, 163, 175)"/></div>
+                                                <div><ChevronUpIcon width={16} color="rgb(156, 163, 175)"/></div>
                                             ) : (
-                                                <div data-id={i} className="cursor-pointer" onClick={ShowDetail}><ChevronDownIcon width={16} color="rgb(156, 163, 175)"/></div>
+                                                <div><ChevronDownIcon width={16} color="rgb(156, 163, 175)"/></div>
                                             )
                                         )
                                     }
                                 </div>
                                 {
                                     menu.detail.length > 0 && open[i] && (
-                                        menu.detail.map((m) => {
+                                        menu.detail.map((m:any) => {
                                             return <div key={m.id} className="hover:bg-gray-50 hover:text-gray-900 h-9 flex items-center p-2 pl-11 text-main-navy text-sm">
                                                 <a className="w-full" href={m.link}>{m.name}</a>
                                             </div>
@@ -62,7 +62,7 @@ export default function Navbar() {
                     </div>
                     <div className="text-main-navy font-bold text-sm">
                         {
-                            ServiceMenuItem.map((service) => {
+                            ServiceMenuItem.map((service:any) => {
                                 return (
                                     <div key={service.id} className="h-8 flex">
                                         <a className="flex items-center w-full" href={service.link} target="_blank">

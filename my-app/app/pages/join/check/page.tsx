@@ -1,7 +1,7 @@
 "use client"
 
 import React from "react"
-import Header from "@/app/src/components/header"
+import Header from "@/app/components/header"
 import { Button } from "@mui/material"
 import {ExclamationCircleIcon} from '@heroicons/react/20/solid'
 

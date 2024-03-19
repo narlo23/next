@@ -1,16 +1,17 @@
 'use client'
 
-import { Layout } from "@/app/src/components/layout";
-import { Button, Box, Pagination, Stack, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Tooltip, Tabs, Tab } from "@mui/material";
+import { Layout } from "@/app/components/layout";
+import { Button, Box, Pagination, Stack, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Tooltip, Tabs, Tab, FormControl, Select, MenuItem } from "@mui/material";
 import React, { useEffect, useState } from "react";
 
 import { ArrowPathIcon, QuestionMarkCircleIcon, PlusIcon, BarsArrowDownIcon, BarsArrowUpIcon } from "@heroicons/react/20/solid";
 import { DataGrid, GridActionsCellItem, GridActionsCellItemProps, GridColDef, GridRowId } from "@mui/x-data-grid";
-import { getUsers } from "@/app/src/api/user";
+import { getUsers } from "@/app/api/user";
 import { DataGridProps } from "@mui/x-data-grid";
-import { PaginationProps } from "@mui/material";
+import { PaginationProps, TabsProps } from "@mui/material";
 import {styled} from '@mui/material/styles'
 import DeleteIcon from '@mui/icons-material/Delete';
+import { ChevronDownIcon } from "@heroicons/react/20/solid";
 
 interface UserData {
     id: number;
@@ -48,6 +49,18 @@ export default function User() {
         '& .Mui-selected' : {
             backgroundColor: 'white !important',
             borderColor: 'rgb(18, 46, 135)'
+        }
+    }))
+
+    const CustomTabs = styled(Tabs)<TabsProps>(({theme}) => ({
+        '& .MuiTab-root' : {
+            padding: '8px 20px',
+            fontWeight: 'bold',
+            lineHeight: '1.25rem',
+            minHeight: '36px'
+        },
+        '& .Mui-selected' : {
+            color: '#122e87 !important'
         }
     }))
 
@@ -179,7 +192,7 @@ export default function User() {
 
     return (
         <Layout>
-            <div className="pt-8 pb-32 px-10">
+            <div className="pt-8 pb-32 px-10 min-w-min">
                 <div className="flex justify-between mb-8">
                     <div className="flex items-center">
                         <div className="text-2xl font-bold text-gray-900">사용자</div>
@@ -229,18 +242,43 @@ export default function User() {
                 </nav>
                 */}
                 <Box>
-                    <Tabs value={selectedMenu} onChange={handleChange}>
+                    <CustomTabs value={selectedMenu} onChange={handleChange} TabIndicatorProps={{
+                        style: {
+                            backgroundColor: '#122e87',
+                        }
+                    }} sx = {{
+                        minHeight: '36px', height: '36px', borderBottom: '1px solid #e5e7eb'
+                    }}>
                         <Tab label="사용자 관리" value="user_management"></Tab>
                         <Tab label="퇴직자 목록" value="retirement_list"></Tab>
-                    </Tabs>
+                    </CustomTabs>
                 </Box>
-                <div className="mt-8 bg-white rounded-xl p-8 min-w-min">
+                <div className="mt-8 bg-white rounded-xl p-8 w-full min-w-min">
                     <div className="mb-2 text-sm text-gray-800">
                         총 {userData === null ? 0 : userData.length}명
                     </div>
                     <div className="flex justify-between items-center w-full mb-4">
                         <div className="flex">
-
+                            <FormControl>
+                                <Select value="id" IconComponent={ChevronDownIcon} className="w-32 h-[2.375rem] text-xs" sx={{
+                                    '& .MuiOutlinedInput-input' : {
+                                        padding: '0.75rem 14px',
+                                    },
+                                    '&.Mui-focused .MuiOutlinedInput-notchedOutline' : {
+                                        borderColor: '#0d1c4b'
+                                    },
+                                    svg : {
+                                        width: '1.25rem',
+                                        height: '100%',
+                                        position: 'absolute',
+                                        top: 0,
+                                        right: '0.5rem',
+                                        color: 'rgb(156, 163, 175)'
+                                    },
+                                }}>
+                                    <MenuItem value="id" className="text-xs">아이디</MenuItem>
+                                </Select>
+                            </FormControl>
                         </div>
                         <div>
                             <Button variant="outlined" className="rounded-md border-gray-300 text-gray-700 px-[11px] hover:border-gray-300 cursor-pointer">
@@ -254,7 +292,7 @@ export default function User() {
                             backgroundColor: 'rgb(249, 250, 251)',
                             color: '#374151',
                         }}}>
-                            <CustomDataGrid columns={columns} rows={userData} hideFooter disableColumnMenu columnHeaderHeight={39} rowHeight={45} sortingOrder={['asc', 'desc']} slots={{
+                            <CustomDataGrid columns={columns} rows={userData} hideFooter autoHeight disableColumnMenu columnHeaderHeight={39} rowHeight={45} sortingOrder={['asc', 'desc']} slots={{
                                 columnSortedDescendingIcon: SortedDescendingIcon,
                                 columnSortedAscendingIcon: SortedAscendingIcon
                             }} sx = {{
@@ -268,7 +306,6 @@ export default function User() {
                             />
                         </Box>)
                     }
-
                     <div className="flex items-center justify-center mt-6 w-full">
                         <Stack spacing={2}>
                             <CustomPagination count={1} variant="outlined" shape="rounded"/>

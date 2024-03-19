@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
-import { Layout } from "@/app/src/components/layout";
+import { Layout } from "@/app/components/layout";
 
 import { ExclamationCircleIcon, PlusIcon } from "@heroicons/react/20/solid";
 import { ChevronRightIcon } from "@heroicons/react/20/solid";

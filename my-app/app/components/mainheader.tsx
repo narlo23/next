@@ -1,6 +1,6 @@
 'use client'
 
-import Header from "@/app/src/components/header";
+import Header from "@/app/components/header";
 import { Button } from "@mui/material";
 import { QuestionMarkCircleIcon, UserCircleIcon } from "@heroicons/react/20/solid";
 import Link from "next/link";
