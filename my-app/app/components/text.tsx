@@ -5,10 +5,8 @@ interface TextProps {
     weight?: 'thin' | 'light' | 'normal' | 'medium' | 'semibold' | 'bold' | 'extrabold' | 'black';
 }
 
-function Text({size = "base", color="main-navy", paragraph, weight = "normal"}:TextProps) {
-    return (
-        <p className={`text-${size} ${color} font-${weight}`}>{paragraph}</p>
-    )
+function Text({ size = 'base', color = 'main-navy', paragraph, weight = 'normal' }: TextProps) {
+    return <p className={`text-${size} ${color} font-${weight}`}>{paragraph}</p>;
 }
 
 export default Text;

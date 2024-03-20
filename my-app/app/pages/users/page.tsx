@@ -1,17 +1,44 @@
-'use client'
+'use client';
 
-import { Layout } from "@/app/components/layout";
-import { Button, Box, Pagination, Stack, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Tooltip, Tabs, Tab, FormControl, Select, MenuItem } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import { Layout } from '@/app/components/layout';
+import {
+    Button,
+    Box,
+    Pagination,
+    Stack,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogContentText,
+    DialogActions,
+    Tooltip,
+    Tabs,
+    Tab,
+    FormControl,
+    Select,
+    MenuItem,
+    SelectChangeEvent,
+    TextField,
+    InputAdornment,
+} from '@mui/material';
+import React, { useEffect, useState } from 'react';
 
-import { ArrowPathIcon, QuestionMarkCircleIcon, PlusIcon, BarsArrowDownIcon, BarsArrowUpIcon } from "@heroicons/react/20/solid";
-import { DataGrid, GridActionsCellItem, GridActionsCellItemProps, GridColDef, GridRowId } from "@mui/x-data-grid";
-import { getUsers } from "@/app/api/user";
-import { DataGridProps } from "@mui/x-data-grid";
-import { PaginationProps, TabsProps } from "@mui/material";
-import {styled} from '@mui/material/styles'
+import {
+    ArrowPathIcon,
+    QuestionMarkCircleIcon,
+    PlusIcon,
+    BarsArrowDownIcon,
+    BarsArrowUpIcon,
+    MagnifyingGlassIcon,
+    XMarkIcon,
+} from '@heroicons/react/20/solid';
+import { DataGrid, GridActionsCellItem, GridActionsCellItemProps, GridColDef, GridRowId } from '@mui/x-data-grid';
+import { getUsers } from '@/app/api/user';
+import { DataGridProps } from '@mui/x-data-grid';
+import { PaginationProps, TabsProps, SelectProps, TextFieldProps } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { ChevronDownIcon } from "@heroicons/react/20/solid";
+import { ChevronDownIcon } from '@heroicons/react/20/solid';
 
 interface UserData {
     id: number;
@@ -23,204 +50,318 @@ interface UserData {
     createdAt?: Date;
 }
 
+const CustomDataGrid = styled(DataGrid)<DataGridProps>(({ theme }) => ({
+    '.MuiDataGrid-columnHeader': {
+        backgroundColor: 'rgb(249, 250, 251)',
+        borderTop: '1px solid rgb(209, 213, 219);',
+    },
+    '.MuiDataGrid-columnHeaderTitle': {
+        fontWeight: 500,
+    },
+    '.MuiDataGrid-virtualScroller': {
+        borderBottom: '1px solid rgb(209, 213, 219)',
+    },
+    '&.MuiDataGrid-root .MuiDataGrid-columnHeader:focus': {
+        outline: 'none !important',
+    },
+    '.MuiDataGrid-columnHeader:focus-within': {
+        outline: 'none',
+    },
+    '&.MuiDataGrid-root .MuiDataGrid-cell:focus': {
+        outline: 'none !important',
+    },
+    '.MuiDataGrid-row.Mui-selected': {
+        backgroundColor: 'white',
+    },
+    '.MuiDataGrid-row.Mui-selected.Mui-hovered': {
+        backgroundColor: 'rgba(0, 0, 0, 0.04)',
+    },
+    '.MuiDataGrid-columnHeaders:hover .MuiDataGrid-columnSeparator': {
+        visibility: 'hidden',
+    },
+}));
+
+const CustomPagination = styled(Pagination)<PaginationProps>(({ theme }) => ({
+    '.MuiPaginationItem-root': {
+        borderRadius: '0.124rem',
+    },
+    '.Mui-selected': {
+        backgroundColor: 'white !important',
+        borderColor: 'rgb(18, 46, 135)',
+    },
+}));
+
+const CustomTabs = styled(Tabs)<TabsProps>(({ theme }) => ({
+    '.MuiTab-root': {
+        padding: '8px 20px',
+        fontWeight: 'bold',
+        lineHeight: '1.25rem',
+        minHeight: '36px',
+    },
+    '.Mui-selected': {
+        color: '#122e87 !important',
+    },
+}));
+
+const CustomSelect = styled(Select)<SelectProps>(({ theme }) => ({
+    '.MuiOutlinedInput-input': {
+        padding: '0.75rem 14px',
+    },
+    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+        borderColor: '#0d1c4b',
+    },
+    svg: {
+        width: '1.25rem',
+        height: '100%',
+        position: 'absolute',
+        top: 0,
+        right: '0.5rem',
+        color: 'rgb(156, 163, 175)',
+    },
+    '.MuiButtonBase-root-MuiMenuItem-root': {
+        backgroundColor: 'white',
+    },
+}));
+
 export default function User() {
-    const [selectedMenu, setSelectedMenu] = useState('user_management')
-    const [userData, setUserData] = useState<UserData[] | null>(null)
-    const [date, setDate] = useState<string>()
-    const syncInfoText = `조직도 동기화란 변경된 조직도 정보를 연동 서비스에 적용하는 것을 말합니다.\n모든 변경된 정보는 동기화를 진행하셔야 연동 서비스에 반영됩니다.\n※ 조직도 정보 : 사용자 정보, 조직 정보, 관리자 정보`
-
-    const CustomDataGrid = styled(DataGrid)<DataGridProps>(({theme}) => ({
-        '& .MuiDataGrid-columnHeader' : {
-            backgroundColor: 'rgb(249, 250, 251)',
-            borderTop: '1px solid rgb(209, 213, 219);',
-        },
-        '& .MuiDataGrid-columnHeaderTitle' : {
-            fontWeight: 500,
-        },
-        '& .MuiDataGrid-root .MuiDataGrid-cell:focus-within' : {
-            outline: 'none !important'
-        }
-    }));
-
-    const CustomPagination = styled(Pagination)<PaginationProps>(({theme}) => ({
-        '& .MuiPaginationItem-root' : {
-            borderRadius: '0.124rem'
-        },
-        '& .Mui-selected' : {
-            backgroundColor: 'white !important',
-            borderColor: 'rgb(18, 46, 135)'
-        }
-    }))
-
-    const CustomTabs = styled(Tabs)<TabsProps>(({theme}) => ({
-        '& .MuiTab-root' : {
-            padding: '8px 20px',
-            fontWeight: 'bold',
-            lineHeight: '1.25rem',
-            minHeight: '36px'
-        },
-        '& .Mui-selected' : {
-            color: '#122e87 !important'
-        }
-    }))
+    const [selectedMenu, setSelectedMenu] = useState('user_management');
+    const [userData, setUserData] = useState<UserData[] | null>(null);
+    const [date, setDate] = useState<string>();
+    const [searchCriteria, setSearchCriteria] = useState('id');
+    const [searchWord, setSearchWord] = useState('');
+    const [showClearIcon, setShowClearIcon] = useState(false);
+    const syncInfoText = `조직도 동기화란 변경된 조직도 정보를 연동 서비스에 적용하는 것을 말합니다.\n모든 변경된 정보는 동기화를 진행하셔야 연동 서비스에 반영됩니다.\n※ 조직도 정보 : 사용자 정보, 조직 정보, 관리자 정보`;
 
     const DateFormat = () => {
-        const date = new Date()
+        const date = new Date();
         let month = date.getMonth() + 1;
-        let day:number = date.getDate();
-        let hour:number = date.getHours();
-        let minute:number = date.getMinutes();
-        let second:number = date.getSeconds();
-        let result = date.getFullYear().toString() + "-"
+        let day: number = date.getDate();
+        let hour: number = date.getHours();
+        let minute: number = date.getMinutes();
+        let second: number = date.getSeconds();
+        let result = date.getFullYear().toString() + '-';
 
         result += month >= 10 ? month : '0' + month;
-        result = result + "-" + (day >= 10 ? day : '0' + day);
-        result = result + " " + (hour >= 10 ? hour : '0' + hour);
-        result = result + ":" + (minute >= 10 ? minute : '0' + minute);
-        result = result + ":" + (second >= 10 ? second : '0' + second);
+        result = result + '-' + (day >= 10 ? day : '0' + day);
+        result = result + ' ' + (hour >= 10 ? hour : '0' + hour);
+        result = result + ':' + (minute >= 10 ? minute : '0' + minute);
+        result = result + ':' + (second >= 10 ? second : '0' + second);
 
         return result;
-    }
+    };
 
     const SortedDescendingIcon = () => {
-        return <BarsArrowUpIcon width={16} height={16} className="ml-1 text-black"/>
-    }
+        return <BarsArrowDownIcon width={16} height={16} className='ml-1 text-gray-500 ' />;
+    };
 
     const SortedAscendingIcon = () => {
-        return <BarsArrowDownIcon width={16} height={16} className="ml-1 text-black"/>
-    }
+        return <BarsArrowUpIcon width={16} height={16} className='ml-1 text-gray-500' />;
+    };
 
     useEffect(() => {
         const getUserData = async () => {
-            const users = await getUsers()
-            let newUsers:UserData[] = [];
-            users.map((user:any) => {
+            const users = await getUsers();
+            let newUsers: UserData[] = [];
+            users.map((user: any) => {
                 newUsers.push({
-                    'id' : user.id,
-                    'name' : user.name,
-                    'username' : user.username,
-                    'email' : user.email,
-                    'address' : user.province + " " + user.city + " " + user.district + " " + user.street + " " + user.zipcode,
-                    'phone' : user.phone,
-                    'createdAt' : user.createdAt
-                })
-            })
-            setUserData(newUsers)
-            setDate(DateFormat())
-        }
+                    id: user.id,
+                    name: user.name,
+                    username: user.username,
+                    email: user.email,
+                    address:
+                        user.province + ' ' + user.city + ' ' + user.district + ' ' + user.street + ' ' + user.zipcode,
+                    phone: user.phone,
+                    createdAt: user.createdAt,
+                });
+            });
+            setUserData(newUsers);
+            setDate(DateFormat());
+        };
         getUserData();
-    }, [])
+    }, []);
 
     const handleChange = (event: React.SyntheticEvent, newValue: string) => {
         setSelectedMenu(newValue);
-      };
+    };
+
+    const changeInputText = (event: React.ChangeEvent<HTMLInputElement>): void => {
+        setShowClearIcon(event.target.value === '' ? false : true);
+        setSearchWord(event.target.value);
+    };
 
     const deleteUser = React.useCallback(
         (id: GridRowId) => () => {
-          setTimeout(() => {
-            setUserData((prevRows) => {
-              return prevRows ? prevRows.filter((row) => row.id !== id) : [];
+            setTimeout(() => {
+                setUserData((prevRows) => {
+                    return prevRows ? prevRows.filter((row) => row.id !== id) : [];
+                });
             });
-          });
         },
-        [],
-      );
+        []
+    );
 
-    function DeleteUserActionItem({
-        deleteUser,
-        ...props
-      }: GridActionsCellItemProps & { deleteUser: () => void }) {
+    const handleSelectChange = (event: SelectChangeEvent<unknown>) => {
+        setSearchCriteria(event.target.value as string);
+    };
+
+    const handleDeleteClick = (): void => {
+        /*검색어 초기화*/
+        setSearchWord('');
+        setShowClearIcon(false);
+    };
+
+    function DeleteUserActionItem({ deleteUser, ...props }: GridActionsCellItemProps & { deleteUser: () => void }) {
         const [open, setOpen] = React.useState(false);
-      
+
         return (
-          <React.Fragment>
-            <GridActionsCellItem {...props} onClick={() => setOpen(true)} />
-            <Dialog
-              open={open}
-              onClose={() => setOpen(false)}
-              aria-labelledby="alert-dialog-title"
-              aria-describedby="alert-dialog-description"
-            >
-              <DialogTitle id="alert-dialog-title">Delete this user?</DialogTitle>
-              <DialogContent>
-                <DialogContentText id="alert-dialog-description">
-                  This action cannot be undone.
-                </DialogContentText>
-              </DialogContent>
-              <DialogActions>
-                <Button onClick={() => setOpen(false)}>Cancel</Button>
-                <Button
-                  onClick={() => {
-                    setOpen(false);
-                    deleteUser();
-                  }}
-                  color="warning"
-                  autoFocus
+            <React.Fragment>
+                <GridActionsCellItem {...props} onClick={() => setOpen(true)} />
+                <Dialog
+                    open={open}
+                    onClose={() => setOpen(false)}
+                    aria-labelledby='alert-dialog-title'
+                    aria-describedby='alert-dialog-description'
                 >
-                  Delete
-                </Button>
-              </DialogActions>
-            </Dialog>
-          </React.Fragment>
+                    <DialogTitle id='alert-dialog-title'>Delete this user?</DialogTitle>
+                    <DialogContent>
+                        <DialogContentText id='alert-dialog-description'>
+                            This action cannot be undone.
+                        </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={() => setOpen(false)}>Cancel</Button>
+                        <Button
+                            onClick={() => {
+                                setOpen(false);
+                                deleteUser();
+                            }}
+                            color='warning'
+                            autoFocus
+                        >
+                            Delete
+                        </Button>
+                    </DialogActions>
+                </Dialog>
+            </React.Fragment>
         );
-      }
+    }
 
     const columns: GridColDef[] = [
-        {field: 'id', headerName: '아이디', headerClassName: 'user-table-header', headerAlign: 'center', align: 'center', flex: 1},
-        {field: 'name', headerName: '이름', headerClassName: 'user-table-header', headerAlign: 'center', align: 'center', flex: 1},
-        {field: 'username', headerName: '유저명', headerClassName: 'user-table-header', headerAlign: 'center', align: 'center', flex: 1}, 
-        {field: 'phone', headerName: '전화번호', headerClassName: 'user-table-header', headerAlign: 'center', align: 'center', flex: 1},
-        {field: 'email', headerName: '이메일', headerClassName: 'user-table-header', headerAlign: 'center', align: 'center', flex: 1},
-        {field: 'address', headerName: '주소', headerClassName: 'user-table-header', headerAlign: 'center', align: 'center', flex: 1},
-        {field: 'createdAt', headerName: '등록일', headerClassName: 'user-table-header', headerAlign: 'center', align: 'center', flex: 1},
+        {
+            field: 'id',
+            headerName: '아이디',
+            headerClassName: 'user-table-header',
+            headerAlign: 'center',
+            align: 'center',
+            flex: 1,
+        },
+        {
+            field: 'name',
+            headerName: '이름',
+            headerClassName: 'user-table-header',
+            headerAlign: 'center',
+            align: 'center',
+            flex: 1,
+        },
+        {
+            field: 'username',
+            headerName: '유저명',
+            headerClassName: 'user-table-header',
+            headerAlign: 'center',
+            align: 'center',
+            flex: 1,
+        },
+        {
+            field: 'phone',
+            headerName: '전화번호',
+            headerClassName: 'user-table-header',
+            headerAlign: 'center',
+            align: 'center',
+            flex: 1,
+        },
+        {
+            field: 'email',
+            headerName: '이메일',
+            headerClassName: 'user-table-header',
+            headerAlign: 'center',
+            align: 'center',
+            flex: 1,
+        },
+        {
+            field: 'address',
+            headerName: '주소',
+            headerClassName: 'user-table-header',
+            headerAlign: 'center',
+            align: 'center',
+            flex: 1,
+        },
+        {
+            field: 'createdAt',
+            headerName: '등록일',
+            headerClassName: 'user-table-header',
+            headerAlign: 'center',
+            align: 'center',
+            flex: 1,
+        },
         {
             field: 'actions',
             type: 'actions',
             width: 80,
             getActions: (params) => [
-              <DeleteUserActionItem
-                key={params.id}
-                label="Delete"
-                showInMenu
-                icon={<DeleteIcon />}
-                deleteUser={deleteUser(params.id)}
-                closeMenuOnClick={false}
-              />,
+                <DeleteUserActionItem
+                    key={params.id}
+                    label='Delete'
+                    showInMenu
+                    icon={<DeleteIcon />}
+                    deleteUser={deleteUser(params.id)}
+                    closeMenuOnClick={false}
+                />,
             ],
-          },
-    ]
+        },
+    ];
 
     return (
         <Layout>
-            <div className="pt-8 pb-32 px-10 min-w-min">
-                <div className="flex justify-between mb-8">
-                    <div className="flex items-center">
-                        <div className="text-2xl font-bold text-gray-900">사용자</div>
-                        <Button variant="contained" className="bg-[#0d1c4b] mx-2 py-2 px-[13px] rounded-md" >
-                            <ArrowPathIcon width={16} height={16} className="mr-1"/>
-                            <div className="flex leading-4">조직도 동기화</div>
+            <div className='pt-8 pb-32 px-10 min-w-min'>
+                <div className='flex justify-between mb-8'>
+                    <div className='flex items-center'>
+                        <div className='text-2xl font-bold text-gray-900'>사용자</div>
+                        <Button
+                            variant='contained'
+                            className='bg-[#0d1c4b] mx-2 py-2 px-[13px] rounded-md hover:bg-secondary'
+                        >
+                            <ArrowPathIcon width={16} height={16} className='mr-1' />
+                            <div className='flex leading-4'>조직도 동기화</div>
                         </Button>
-                        <div className="text-gray-400 flex items-center">
-                            <Tooltip title={syncInfoText} placement="right" componentsProps={{
-                                tooltip: {
-                                    sx: {
-                                        bgcolor: 'white',
-                                        color: '#374151',
-                                        border: '1px solid rgb(229 231 235)',
-                                        maxWidth: 500,
-                                        whiteSpace: 'pre-wrap'
-                                    }
-                                }
-                            }}>
-                                <QuestionMarkCircleIcon width={16} height={16} className="cursor-pointer" />
+                        <div className='text-gray-400 flex items-center'>
+                            <Tooltip
+                                title={syncInfoText}
+                                placement='right'
+                                componentsProps={{
+                                    tooltip: {
+                                        sx: {
+                                            bgcolor: 'white',
+                                            color: '#374151',
+                                            border: '1px solid rgb(229 231 235)',
+                                            maxWidth: 500,
+                                            whiteSpace: 'pre-wrap',
+                                        },
+                                    },
+                                }}
+                            >
+                                <QuestionMarkCircleIcon width={16} height={16} className='cursor-pointer' />
                             </Tooltip>
-                            <div className="ml-1 text-xs">마지막 동기화 일시 : {date}</div>
-                        </div>                        
+                            <div className='ml-1 text-xs'>마지막 동기화 일시 : {date}</div>
+                        </div>
                     </div>
                     <div>
-                        <Button variant="outlined" className="bg-white text-secondary border-secondary hover:border-secondary py-2 px-[13px] rounded-md">
-                            <PlusIcon width={16} height={16} className="mr-1"/>
-                            <div className="flex leading-4">엑셀 일괄 등록</div></Button>
+                        <Button
+                            variant='outlined'
+                            className='bg-white text-secondary border-secondary hover:border-secondary hover:bg-[#d5dbf0] py-2 px-[13px] rounded-md'
+                        >
+                            <PlusIcon width={16} height={16} className='mr-1' />
+                            <div className='flex leading-4'>엑셀 일괄 등록</div>
+                        </Button>
                     </div>
                 </div>
                 {/*
@@ -242,77 +383,152 @@ export default function User() {
                 </nav>
                 */}
                 <Box>
-                    <CustomTabs value={selectedMenu} onChange={handleChange} TabIndicatorProps={{
-                        style: {
-                            backgroundColor: '#122e87',
-                        }
-                    }} sx = {{
-                        minHeight: '36px', height: '36px', borderBottom: '1px solid #e5e7eb'
-                    }}>
-                        <Tab label="사용자 관리" value="user_management"></Tab>
-                        <Tab label="퇴직자 목록" value="retirement_list"></Tab>
+                    <CustomTabs
+                        value={selectedMenu}
+                        onChange={handleChange}
+                        TabIndicatorProps={{
+                            style: {
+                                backgroundColor: '#122e87',
+                            },
+                        }}
+                        sx={{
+                            minHeight: '36px',
+                            height: '36px',
+                            borderBottom: '1px solid #e5e7eb',
+                        }}
+                    >
+                        <Tab label='사용자 관리' value='user_management'></Tab>
+                        <Tab label='퇴직자 목록' value='retirement_list'></Tab>
                     </CustomTabs>
                 </Box>
-                <div className="mt-8 bg-white rounded-xl p-8 w-full min-w-min">
-                    <div className="mb-2 text-sm text-gray-800">
-                        총 {userData === null ? 0 : userData.length}명
-                    </div>
-                    <div className="flex justify-between items-center w-full mb-4">
-                        <div className="flex">
+                <div className='mt-8 bg-white rounded-xl p-8 w-full min-w-min'>
+                    <div className='mb-2 text-sm text-gray-800'>총 {userData === null ? 0 : userData.length}명</div>
+                    <div className='flex justify-between items-center w-full mb-4'>
+                        <div className='flex'>
                             <FormControl>
-                                <Select value="id" IconComponent={ChevronDownIcon} className="w-32 h-[2.375rem] text-xs" sx={{
-                                    '& .MuiOutlinedInput-input' : {
-                                        padding: '0.75rem 14px',
-                                    },
-                                    '&.Mui-focused .MuiOutlinedInput-notchedOutline' : {
-                                        borderColor: '#0d1c4b'
-                                    },
-                                    svg : {
-                                        width: '1.25rem',
-                                        height: '100%',
-                                        position: 'absolute',
-                                        top: 0,
-                                        right: '0.5rem',
-                                        color: 'rgb(156, 163, 175)'
-                                    },
-                                }}>
-                                    <MenuItem value="id" className="text-xs">아이디</MenuItem>
-                                </Select>
+                                <CustomSelect
+                                    variant='outlined'
+                                    value={searchCriteria}
+                                    onChange={handleSelectChange}
+                                    IconComponent={ChevronDownIcon}
+                                    className='w-32 h-[2.375rem] text-xs rounded-r-none'
+                                    MenuProps={{
+                                        sx: {
+                                            '.Mui-selected': {
+                                                backgroundColor: 'white !important',
+                                                fontWeight: 700,
+                                                color: '#0d1c4b',
+                                            },
+                                            '.Mui-selected:hover': {
+                                                backgroundColor: '#e4e8f9 !important',
+                                            },
+                                            '.MuiMenuItem-root:hover': {
+                                                backgroundColor: '#e4e8f9',
+                                            },
+                                        },
+                                    }}
+                                >
+                                    <MenuItem value='id' className='text-xs'>
+                                        아이디
+                                    </MenuItem>
+                                    <MenuItem value='name' className='text-xs'>
+                                        이름
+                                    </MenuItem>
+                                </CustomSelect>
+                            </FormControl>
+                            <FormControl className='ml-[-1px]'>
+                                <TextField
+                                    className='rounded-l-none'
+                                    value={searchWord}
+                                    placeholder='검색어 입력'
+                                    onChange={changeInputText}
+                                    InputProps={{
+                                        startAdornment: (
+                                            <InputAdornment position='start'>
+                                                <MagnifyingGlassIcon className='w-5 h-5 text-gray-400' />
+                                            </InputAdornment>
+                                        ),
+                                        endAdornment: (
+                                            <InputAdornment position='end'>
+                                                <XMarkIcon
+                                                    className='w-5 text-[#0d1c4b] cursor-pointer'
+                                                    style={{ visibility: showClearIcon ? 'visible' : 'hidden' }}
+                                                    onClick={handleDeleteClick}
+                                                />
+                                            </InputAdornment>
+                                        ),
+                                        sx: {
+                                            borderTopLeftRadius: 0,
+                                            borderBottomLeftRadius: 0,
+                                            '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                                borderColor: '#0d1c4b',
+                                            },
+                                            input: {
+                                                fontSize: '0.75rem',
+                                                lineHeight: '1rem',
+                                                padding: '10px 12px',
+                                                color: 'rgb(107, 114, 128)',
+                                                height: '18px',
+                                            },
+                                            'input:focus': {
+                                                boxShadow: 0,
+                                            },
+                                        },
+                                    }}
+                                ></TextField>
                             </FormControl>
                         </div>
                         <div>
-                            <Button variant="outlined" className="rounded-md border-gray-300 text-gray-700 px-[11px] hover:border-gray-300 cursor-pointer">
-                                <PlusIcon width={16} height={16}/>
-                                <div className="font-medium ml-1 pr-1 text-xs">등록</div>
+                            <Button
+                                variant='outlined'
+                                className='rounded-md border-gray-300 text-gray-700 px-[11px] hover:border-gray-300 hover:bg-gray-100 cursor-pointer'
+                            >
+                                <PlusIcon width={16} height={16} />
+                                <div className='font-medium ml-1 pr-1 text-xs'>등록</div>
                             </Button>
                         </div>
                     </div>
-                    {
-                        userData && (<Box sx={{width: '100%', '&.user-table-header': {
-                            backgroundColor: 'rgb(249, 250, 251)',
-                            color: '#374151',
-                        }}}>
-                            <CustomDataGrid columns={columns} rows={userData} hideFooter autoHeight disableColumnMenu columnHeaderHeight={39} rowHeight={45} sortingOrder={['asc', 'desc']} slots={{
-                                columnSortedDescendingIcon: SortedDescendingIcon,
-                                columnSortedAscendingIcon: SortedAscendingIcon
-                            }} sx = {{
-                                '.MuiDataGrid-columnSeperator' : {
-                                    display: 'none'
+                    {userData && (
+                        <Box
+                            sx={{
+                                width: '100%',
+                                '&.user-table-header': {
+                                    backgroundColor: 'rgb(249, 250, 251)',
+                                    color: '#374151',
                                 },
-                                '&.MuiDataGrid-root' : {
-                                    border: 'none'
-                                }
                             }}
+                        >
+                            <CustomDataGrid
+                                columns={columns}
+                                rows={userData}
+                                hideFooter
+                                autoHeight
+                                disableColumnMenu
+                                columnHeaderHeight={39}
+                                rowHeight={45}
+                                sortingOrder={['asc', 'desc']}
+                                slots={{
+                                    columnSortedDescendingIcon: SortedDescendingIcon,
+                                    columnSortedAscendingIcon: SortedAscendingIcon,
+                                }}
+                                sx={{
+                                    '.MuiDataGrid-columnSeperator': {
+                                        display: 'none',
+                                    },
+                                    '&.MuiDataGrid-root': {
+                                        border: 'none',
+                                    },
+                                }}
                             />
-                        </Box>)
-                    }
-                    <div className="flex items-center justify-center mt-6 w-full">
+                        </Box>
+                    )}
+                    <div className='flex items-center justify-center mt-6 w-full'>
                         <Stack spacing={2}>
-                            <CustomPagination count={1} variant="outlined" shape="rounded"/>
+                            <CustomPagination count={1} variant='outlined' shape='rounded' />
                         </Stack>
                     </div>
                 </div>
             </div>
         </Layout>
-    )
+    );
 }
