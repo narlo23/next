@@ -14,14 +14,8 @@ import {
     Tooltip,
     Tabs,
     Tab,
-    FormControl,
-    Select,
-    MenuItem,
-    SelectChangeEvent,
-    TextField,
-    InputAdornment,
 } from '@mui/material';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 
 import {
     ArrowPathIcon,
@@ -29,16 +23,26 @@ import {
     PlusIcon,
     BarsArrowDownIcon,
     BarsArrowUpIcon,
-    MagnifyingGlassIcon,
-    XMarkIcon,
 } from '@heroicons/react/20/solid';
-import { DataGrid, GridActionsCellItem, GridActionsCellItemProps, GridColDef, GridRowId } from '@mui/x-data-grid';
+import {
+    DataGrid,
+    GridActionsCellItem,
+    GridActionsCellItemProps,
+    GridColDef,
+    GridRowId,
+    GridToolbar,
+    GridToolbarQuickFilter,
+    gridPageCountSelector,
+    gridPageSelector,
+    useGridApiContext,
+    useGridSelector,
+} from '@mui/x-data-grid';
 import { getUsers } from '@/app/api/user';
 import { DataGridProps } from '@mui/x-data-grid';
-import { PaginationProps, TabsProps, SelectProps, TextFieldProps } from '@mui/material';
+import { PaginationProps, TabsProps } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { ChevronDownIcon } from '@heroicons/react/20/solid';
+import CustomToolbar from '@/app/components/users/customToolbar';
 
 interface UserData {
     id: number;
@@ -81,16 +85,6 @@ const CustomDataGrid = styled(DataGrid)<DataGridProps>(({ theme }) => ({
     },
 }));
 
-const CustomPagination = styled(Pagination)<PaginationProps>(({ theme }) => ({
-    '.MuiPaginationItem-root': {
-        borderRadius: '0.124rem',
-    },
-    '.Mui-selected': {
-        backgroundColor: 'white !important',
-        borderColor: 'rgb(18, 46, 135)',
-    },
-}));
-
 const CustomTabs = styled(Tabs)<TabsProps>(({ theme }) => ({
     '.MuiTab-root': {
         padding: '8px 20px',
@@ -103,34 +97,65 @@ const CustomTabs = styled(Tabs)<TabsProps>(({ theme }) => ({
     },
 }));
 
-const CustomSelect = styled(Select)<SelectProps>(({ theme }) => ({
-    '.MuiOutlinedInput-input': {
-        padding: '0.75rem 14px',
+const StyledPagination = styled(Pagination)<PaginationProps>(({ theme }) => ({
+    '.MuiPaginationItem-root': {
+        borderRadius: '0.124rem',
     },
-    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-        borderColor: '#0d1c4b',
-    },
-    svg: {
-        width: '1.25rem',
-        height: '100%',
-        position: 'absolute',
-        top: 0,
-        right: '0.5rem',
-        color: 'rgb(156, 163, 175)',
-    },
-    '.MuiButtonBase-root-MuiMenuItem-root': {
-        backgroundColor: 'white',
+    '.Mui-selected': {
+        backgroundColor: 'white !important',
+        borderColor: 'rgb(18, 46, 135)',
     },
 }));
 
+const CustomPagination = () => {
+    const apiRef = useGridApiContext();
+    const page = useGridSelector(apiRef, gridPageSelector);
+    const pageCount = useGridSelector(apiRef, gridPageCountSelector);
+
+    return (
+        <div className='flex items-center justify-center mt-6 w-full'>
+            <Stack spacing={2}>
+                <StyledPagination
+                    count={pageCount}
+                    page={page + 1}
+                    variant='outlined'
+                    shape='rounded'
+                    onChange={(event, value) => apiRef.current.setPage(value - 1)}
+                />
+            </Stack>
+        </div>
+    );
+};
+
 export default function User() {
     const [selectedMenu, setSelectedMenu] = useState('user_management');
-    const [userData, setUserData] = useState<UserData[] | null>(null);
+    const [userData, setUserData] = useState<UserData[]>([]);
+    const [filteredData, setFilteredData] = useState<UserData[]>([]);
+
     const [date, setDate] = useState<string>();
-    const [searchCriteria, setSearchCriteria] = useState('id');
-    const [searchWord, setSearchWord] = useState('');
-    const [showClearIcon, setShowClearIcon] = useState(false);
-    const syncInfoText = `조직도 동기화란 변경된 조직도 정보를 연동 서비스에 적용하는 것을 말합니다.\n모든 변경된 정보는 동기화를 진행하셔야 연동 서비스에 반영됩니다.\n※ 조직도 정보 : 사용자 정보, 조직 정보, 관리자 정보`;
+    const SYNC_INFO_TEXT = `조직도 동기화란 변경된 조직도 정보를 연동 서비스에 적용하는 것을 말합니다.\n모든 변경된 정보는 동기화를 진행하셔야 연동 서비스에 반영됩니다.\n※ 조직도 정보 : 사용자 정보, 조직 정보, 관리자 정보`;
+
+    useEffect(() => {
+        const fetchUserData = async () => {
+            const users = await getUsers();
+            let newUsers: UserData[] = [];
+            users.map((user: any) => {
+                newUsers.push({
+                    id: user.id,
+                    name: user.name,
+                    username: user.username,
+                    email: user.email,
+                    address:
+                        user.province + ' ' + user.city + ' ' + user.district + ' ' + user.street + ' ' + user.zipcode,
+                    phone: user.phone,
+                    createdAt: user.createdAt,
+                });
+            });
+            setUserData(newUsers);
+            setFilteredData(newUsers);
+        };
+        fetchUserData();
+    }, []);
 
     const DateFormat = () => {
         const date = new Date();
@@ -151,100 +176,24 @@ export default function User() {
     };
 
     const SortedDescendingIcon = () => {
-        return <BarsArrowDownIcon width={16} height={16} className='ml-1 text-gray-500 ' />;
+        return <BarsArrowDownIcon width={16} height={16} className='ml-1 text-gray-500' />;
     };
 
     const SortedAscendingIcon = () => {
         return <BarsArrowUpIcon width={16} height={16} className='ml-1 text-gray-500' />;
     };
 
-    useEffect(() => {
-        const getUserData = async () => {
-            const users = await getUsers();
-            let newUsers: UserData[] = [];
-            users.map((user: any) => {
-                newUsers.push({
-                    id: user.id,
-                    name: user.name,
-                    username: user.username,
-                    email: user.email,
-                    address:
-                        user.province + ' ' + user.city + ' ' + user.district + ' ' + user.street + ' ' + user.zipcode,
-                    phone: user.phone,
-                    createdAt: user.createdAt,
-                });
-            });
-            setUserData(newUsers);
-            setDate(DateFormat());
-        };
-        getUserData();
-    }, []);
+    const searchKeyword = (searchCriteria: string, value: string) => {
+        setFilteredData(
+            userData.filter((d: any) => {
+                return d[searchCriteria].toString().includes(value);
+            })
+        );
+    };
 
     const handleChange = (event: React.SyntheticEvent, newValue: string) => {
         setSelectedMenu(newValue);
     };
-
-    const changeInputText = (event: React.ChangeEvent<HTMLInputElement>): void => {
-        setShowClearIcon(event.target.value === '' ? false : true);
-        setSearchWord(event.target.value);
-    };
-
-    const deleteUser = React.useCallback(
-        (id: GridRowId) => () => {
-            setTimeout(() => {
-                setUserData((prevRows) => {
-                    return prevRows ? prevRows.filter((row) => row.id !== id) : [];
-                });
-            });
-        },
-        []
-    );
-
-    const handleSelectChange = (event: SelectChangeEvent<unknown>) => {
-        setSearchCriteria(event.target.value as string);
-    };
-
-    const handleDeleteClick = (): void => {
-        /*검색어 초기화*/
-        setSearchWord('');
-        setShowClearIcon(false);
-    };
-
-    function DeleteUserActionItem({ deleteUser, ...props }: GridActionsCellItemProps & { deleteUser: () => void }) {
-        const [open, setOpen] = React.useState(false);
-
-        return (
-            <React.Fragment>
-                <GridActionsCellItem {...props} onClick={() => setOpen(true)} />
-                <Dialog
-                    open={open}
-                    onClose={() => setOpen(false)}
-                    aria-labelledby='alert-dialog-title'
-                    aria-describedby='alert-dialog-description'
-                >
-                    <DialogTitle id='alert-dialog-title'>Delete this user?</DialogTitle>
-                    <DialogContent>
-                        <DialogContentText id='alert-dialog-description'>
-                            This action cannot be undone.
-                        </DialogContentText>
-                    </DialogContent>
-                    <DialogActions>
-                        <Button onClick={() => setOpen(false)}>Cancel</Button>
-                        <Button
-                            onClick={() => {
-                                setOpen(false);
-                                deleteUser();
-                            }}
-                            color='warning'
-                            autoFocus
-                        >
-                            Delete
-                        </Button>
-                    </DialogActions>
-                </Dialog>
-            </React.Fragment>
-        );
-    }
 
     const columns: GridColDef[] = [
         {
@@ -307,16 +256,7 @@ export default function User() {
             field: 'actions',
             type: 'actions',
             width: 80,
-            getActions: (params) => [
-                <DeleteUserActionItem
-                    key={params.id}
-                    label='Delete'
-                    showInMenu
-                    icon={<DeleteIcon />}
-                    deleteUser={deleteUser(params.id)}
-                    closeMenuOnClick={false}
-                />,
-            ],
+            getActions: (params) => [],
         },
     ];
 
@@ -335,7 +275,7 @@ export default function User() {
                         </Button>
                         <div className='text-gray-400 flex items-center'>
                             <Tooltip
-                                title={syncInfoText}
+                                title={SYNC_INFO_TEXT}
                                 placement='right'
                                 componentsProps={{
                                     tooltip: {
@@ -351,7 +291,7 @@ export default function User() {
                             >
                                 <QuestionMarkCircleIcon width={16} height={16} className='cursor-pointer' />
                             </Tooltip>
-                            <div className='ml-1 text-xs'>마지막 동기화 일시 : {date}</div>
+                            <div className='ml-1 text-xs'>마지막 동기화 일시 : {DateFormat()}</div>
                         </div>
                     </div>
                     <div>
@@ -364,24 +304,6 @@ export default function User() {
                         </Button>
                     </div>
                 </div>
-                {/*
-                <nav className="flex">
-                    {
-                        UserMenuItem.map((userMenu) => {
-                            return userMenu.id === selectedMenu ? (
-                                <div className="border-b-2 border-secondary" key={userMenu.id} data-id={userMenu.id} onClick={ChangeSelectedMenu}>
-                                    <Button className="px-5 py-2 text-sm hover:text-secondary hover:bg-transparent focus:outline-none font-bold text-secondary">{userMenu.name}</Button>
-                                </div>
-                            ) : (
-                                <div className="border-b border-gray-200" key={userMenu.id} data-id={userMenu.id}  onClick={ChangeSelectedMenu}>
-                                    <Button className="px-5 py-2 text-sm hover:text-secondary hover:bg-transparent focus:outline-none font-medium text-gray-500">{userMenu.name}</Button>
-                                </div>
-                            )
-                        })
-                    }
-                    <div className="flex-1 border-b border-gray-200"></div>
-                </nav>
-                */}
                 <Box>
                     <CustomTabs
                         value={selectedMenu}
@@ -402,91 +324,10 @@ export default function User() {
                     </CustomTabs>
                 </Box>
                 <div className='mt-8 bg-white rounded-xl p-8 w-full min-w-min'>
-                    <div className='mb-2 text-sm text-gray-800'>총 {userData === null ? 0 : userData.length}명</div>
-                    <div className='flex justify-between items-center w-full mb-4'>
-                        <div className='flex'>
-                            <FormControl>
-                                <CustomSelect
-                                    variant='outlined'
-                                    value={searchCriteria}
-                                    onChange={handleSelectChange}
-                                    IconComponent={ChevronDownIcon}
-                                    className='w-32 h-[2.375rem] text-xs rounded-r-none'
-                                    MenuProps={{
-                                        sx: {
-                                            '.Mui-selected': {
-                                                backgroundColor: 'white !important',
-                                                fontWeight: 700,
-                                                color: '#0d1c4b',
-                                            },
-                                            '.Mui-selected:hover': {
-                                                backgroundColor: '#e4e8f9 !important',
-                                            },
-                                            '.MuiMenuItem-root:hover': {
-                                                backgroundColor: '#e4e8f9',
-                                            },
-                                        },
-                                    }}
-                                >
-                                    <MenuItem value='id' className='text-xs'>
-                                        아이디
-                                    </MenuItem>
-                                    <MenuItem value='name' className='text-xs'>
-                                        이름
-                                    </MenuItem>
-                                </CustomSelect>
-                            </FormControl>
-                            <FormControl className='ml-[-1px]'>
-                                <TextField
-                                    className='rounded-l-none'
-                                    value={searchWord}
-                                    placeholder='검색어 입력'
-                                    onChange={changeInputText}
-                                    InputProps={{
-                                        startAdornment: (
-                                            <InputAdornment position='start'>
-                                                <MagnifyingGlassIcon className='w-5 h-5 text-gray-400' />
-                                            </InputAdornment>
-                                        ),
-                                        endAdornment: (
-                                            <InputAdornment position='end'>
-                                                <XMarkIcon
-                                                    className='w-5 text-[#0d1c4b] cursor-pointer'
-                                                    style={{ visibility: showClearIcon ? 'visible' : 'hidden' }}
-                                                    onClick={handleDeleteClick}
-                                                />
-                                            </InputAdornment>
-                                        ),
-                                        sx: {
-                                            borderTopLeftRadius: 0,
-                                            borderBottomLeftRadius: 0,
-                                            '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                                                borderColor: '#0d1c4b',
-                                            },
-                                            input: {
-                                                fontSize: '0.75rem',
-                                                lineHeight: '1rem',
-                                                padding: '10px 12px',
-                                                color: 'rgb(107, 114, 128)',
-                                                height: '18px',
-                                            },
-                                            'input:focus': {
-                                                boxShadow: 0,
-                                            },
-                                        },
-                                    }}
-                                ></TextField>
-                            </FormControl>
-                        </div>
-                        <div>
-                            <Button
-                                variant='outlined'
-                                className='rounded-md border-gray-300 text-gray-700 px-[11px] hover:border-gray-300 hover:bg-gray-100 cursor-pointer'
-                            >
-                                <PlusIcon width={16} height={16} />
-                                <div className='font-medium ml-1 pr-1 text-xs'>등록</div>
-                            </Button>
-                        </div>
+                    <div className='mb-2 text-sm text-gray-800'>
+                        {filteredData.length === userData.length
+                            ? `총 ${userData.length}명`
+                            : `검색 결과 ${filteredData.length}명`}
                     </div>
                     {userData && (
                         <Box
@@ -500,16 +341,26 @@ export default function User() {
                         >
                             <CustomDataGrid
                                 columns={columns}
-                                rows={userData}
-                                hideFooter
+                                rows={filteredData}
+                                pagination
                                 autoHeight
-                                disableColumnMenu
+                                hideFooterSelectedRowCount
                                 columnHeaderHeight={39}
                                 rowHeight={45}
-                                sortingOrder={['asc', 'desc']}
+                                initialState={{
+                                    pagination: { paginationModel: { pageSize: 5 } },
+                                }}
                                 slots={{
                                     columnSortedDescendingIcon: SortedDescendingIcon,
                                     columnSortedAscendingIcon: SortedAscendingIcon,
+                                    toolbar: CustomToolbar,
+                                    pagination: CustomPagination,
+                                }}
+                                slotProps={{
+                                    toolbar: {
+                                        data: columns,
+                                        setData: searchKeyword,
+                                    },
                                 }}
                                 sx={{
                                     '.MuiDataGrid-columnSeperator': {
@@ -522,11 +373,6 @@ export default function User() {
                             />
                         </Box>
                     )}
-                    <div className='flex items-center justify-center mt-6 w-full'>
-                        <Stack spacing={2}>
-                            <CustomPagination count={1} variant='outlined' shape='rounded' />
-                        </Stack>
-                    </div>
                 </div>
             </div>
         </Layout>
