@@ -1,21 +1,10 @@
 'use client';
 
+import { Button, Box, Pagination, Stack, Tooltip, Tabs, Tab, PaginationProps, TabsProps } from '@mui/material';
+import React, { useEffect, useState } from 'react';
+
 import { Layout } from '@/app/components/layout';
-import {
-    Button,
-    Box,
-    Pagination,
-    Stack,
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    DialogContentText,
-    DialogActions,
-    Tooltip,
-    Tabs,
-    Tab,
-} from '@mui/material';
-import React, { useEffect, useMemo, useState } from 'react';
+import CustomToolbar from '@/app/components/users/customToolbar';
 
 import {
     ArrowPathIcon,
@@ -26,23 +15,15 @@ import {
 } from '@heroicons/react/20/solid';
 import {
     DataGrid,
-    GridActionsCellItem,
-    GridActionsCellItemProps,
     GridColDef,
-    GridRowId,
-    GridToolbar,
-    GridToolbarQuickFilter,
     gridPageCountSelector,
     gridPageSelector,
     useGridApiContext,
     useGridSelector,
+    DataGridProps,
 } from '@mui/x-data-grid';
 import { getUsers } from '@/app/api/user';
-import { DataGridProps } from '@mui/x-data-grid';
-import { PaginationProps, TabsProps } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import DeleteIcon from '@mui/icons-material/Delete';
-import CustomToolbar from '@/app/components/users/customToolbar';
 
 interface UserData {
     id: number;
@@ -54,7 +35,7 @@ interface UserData {
     createdAt?: Date;
 }
 
-const CustomDataGrid = styled(DataGrid)<DataGridProps>(({ theme }) => ({
+const CustomDataGrid = styled(DataGrid)<DataGridProps>(() => ({
     '.MuiDataGrid-columnHeader': {
         backgroundColor: 'rgb(249, 250, 251)',
         borderTop: '1px solid rgb(209, 213, 219);',
@@ -85,7 +66,7 @@ const CustomDataGrid = styled(DataGrid)<DataGridProps>(({ theme }) => ({
     },
 }));
 
-const CustomTabs = styled(Tabs)<TabsProps>(({ theme }) => ({
+const CustomTabs = styled(Tabs)<TabsProps>(() => ({
     '.MuiTab-root': {
         padding: '8px 20px',
         fontWeight: 'bold',
@@ -97,7 +78,7 @@ const CustomTabs = styled(Tabs)<TabsProps>(({ theme }) => ({
     },
 }));
 
-const StyledPagination = styled(Pagination)<PaginationProps>(({ theme }) => ({
+const StyledPagination = styled(Pagination)<PaginationProps>(() => ({
     '.MuiPaginationItem-root': {
         borderRadius: '0.124rem',
     },
@@ -127,12 +108,30 @@ const CustomPagination = () => {
     );
 };
 
+const DateFormat = () => {
+    const date = new Date();
+    let month = date.getMonth() + 1;
+    let day: number = date.getDate();
+    let hour: number = date.getHours();
+    let minute: number = date.getMinutes();
+    let second: number = date.getSeconds();
+    let result = date.getFullYear().toString() + '-';
+
+    result += month >= 10 ? month : '0' + month;
+    result = result + '-' + (day >= 10 ? day : '0' + day);
+    result = result + ' ' + (hour >= 10 ? hour : '0' + hour);
+    result = result + ':' + (minute >= 10 ? minute : '0' + minute);
+    result = result + ':' + (second >= 10 ? second : '0' + second);
+
+    return result;
+};
+
 export default function User() {
     const [selectedMenu, setSelectedMenu] = useState('user_management');
+    const [date, setDate] = useState<string>('');
     const [userData, setUserData] = useState<UserData[]>([]);
     const [filteredData, setFilteredData] = useState<UserData[]>([]);
 
-    const [date, setDate] = useState<string>();
     const SYNC_INFO_TEXT = `조직도 동기화란 변경된 조직도 정보를 연동 서비스에 적용하는 것을 말합니다.\n모든 변경된 정보는 동기화를 진행하셔야 연동 서비스에 반영됩니다.\n※ 조직도 정보 : 사용자 정보, 조직 정보, 관리자 정보`;
 
     useEffect(() => {
@@ -155,25 +154,8 @@ export default function User() {
             setFilteredData(newUsers);
         };
         fetchUserData();
+        setDate(DateFormat());
     }, []);
-
-    const DateFormat = () => {
-        const date = new Date();
-        let month = date.getMonth() + 1;
-        let day: number = date.getDate();
-        let hour: number = date.getHours();
-        let minute: number = date.getMinutes();
-        let second: number = date.getSeconds();
-        let result = date.getFullYear().toString() + '-';
-
-        result += month >= 10 ? month : '0' + month;
-        result = result + '-' + (day >= 10 ? day : '0' + day);
-        result = result + ' ' + (hour >= 10 ? hour : '0' + hour);
-        result = result + ':' + (minute >= 10 ? minute : '0' + minute);
-        result = result + ':' + (second >= 10 ? second : '0' + second);
-
-        return result;
-    };
 
     const SortedDescendingIcon = () => {
         return <BarsArrowDownIcon width={16} height={16} className='ml-1 text-gray-500' />;
@@ -291,7 +273,7 @@ export default function User() {
                             >
                                 <QuestionMarkCircleIcon width={16} height={16} className='cursor-pointer' />
                             </Tooltip>
-                            <div className='ml-1 text-xs'>마지막 동기화 일시 : {DateFormat()}</div>
+                            <div className='ml-1 text-xs'>마지막 동기화 일시 : {date}</div>
                         </div>
                     </div>
                     <div>

@@ -13,7 +13,7 @@ import {
 import { GridToolbarContainer } from '@mui/x-data-grid';
 import { useState } from 'react';
 
-const StyledSelect = styled(Select)<SelectProps>(({ theme }) => ({
+const StyledSelect = styled(Select)<SelectProps>(() => ({
     '.MuiOutlinedInput-input': {
         padding: '0.75rem 14px',
     },

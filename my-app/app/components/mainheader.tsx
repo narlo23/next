@@ -2,7 +2,7 @@
 
 import Header from '@/app/components/header';
 import { Button } from '@mui/material';
-import { QuestionMarkCircleIcon, UserCircleIcon } from '@heroicons/react/20/solid';
+import { QuestionMarkCircleIcon } from '@heroicons/react/20/solid';
 import Link from 'next/link';
 import { useState, useEffect, useRef } from 'react';
 
@@ -30,10 +30,10 @@ export default function MainHeader() {
                 <Link href='https://jiransoft.gitbook.io/manual/' target='_blank'>
                     <Button
                         variant='outlined'
-                        className='border-[#d1d5db] hover:border-[#d1d5db] py-2 px-[13px]'
+                        className='border-[#d1d5db] hover:border-[#d1d5db] py-2 px-[13px] rounded-md'
                         startIcon={<QuestionMarkCircleIcon className='text-secondary' width={16} />}
                     >
-                        <div className='text-secondary'>사용가이드</div>
+                        <div className='text-secondary h-5 flex items-center'>사용가이드</div>
                     </Button>
                 </Link>
                 <div className='w-7 h-7'>
