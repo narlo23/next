@@ -41,11 +41,13 @@ const CustomToolbar = ({ data, setData }: { data: any; setData: any }) => {
 
     const handleSelectChange = (event: SelectChangeEvent<unknown>) => {
         setSearchCriteria(event.target.value as string);
+        setData(event.target.value, searchWord);
     };
 
     const handleDeleteClick = (): void => {
         /*검색어 초기화*/
         setSearchWord('');
+        setData(searchCriteria, '');
         setShowClearIcon(false);
     };
 
