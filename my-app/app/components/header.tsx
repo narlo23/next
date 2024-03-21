@@ -4,13 +4,14 @@ import Link from 'next/link';
 
 type HeaderProps = {
     pad?: string;
+    shadow?: string;
     children?: React.ReactNode;
 };
 
-export default function Header({ pad, children }: HeaderProps) {
+export default function Header({ pad, shadow = 'sm', children }: HeaderProps) {
     return (
         <header
-            className={`flex items-center justify-between py-4 ${pad} bg-white shadow-sm border-b border-border-gray`}
+            className={`flex items-center justify-between py-4 ${pad} bg-white shadow-${shadow} border-b border-border-gray`}
         >
             <Link href={'/pages/dashboard'}>
                 <svg
