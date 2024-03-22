@@ -21,9 +21,13 @@ import {
     useGridApiContext,
     useGridSelector,
     DataGridProps,
+    GridEventListener,
+    GridRowParams,
 } from '@mui/x-data-grid';
 import { getUsers } from '@/app/api/user';
 import { styled } from '@mui/material/styles';
+import { useQuery } from 'react-query';
+import UserInfoModal from '@/app/components/users/userInfoModal';
 
 interface UserData {
     id: number;
@@ -126,36 +130,42 @@ const DateFormat = () => {
     return result;
 };
 
+const fetchUserList = async () => {
+    const users = await getUsers();
+    let newUsers: UserData[] = [];
+    users.map((user: any) => {
+        newUsers.push({
+            id: user.id,
+            name: user.name,
+            username: user.username,
+            email: user.email,
+            address: user.province + ' ' + user.city + ' ' + user.district + ' ' + user.street + ' ' + user.zipcode,
+            phone: user.phone,
+            createdAt: user.createdAt,
+        });
+    });
+    return newUsers;
+};
+
 export default function User() {
     const [selectedMenu, setSelectedMenu] = useState('user_management');
     const [date, setDate] = useState<string>('');
-    const [userData, setUserData] = useState<UserData[]>([]);
+    const { isLoading, error, data } = useQuery('userlist', fetchUserList);
     const [filteredData, setFilteredData] = useState<UserData[]>([]);
+    const [showModal, setShowModal] = useState(false);
+    const [modalParams, setModalParams] = useState<GridRowParams>();
 
     const SYNC_INFO_TEXT = `조직도 동기화란 변경된 조직도 정보를 연동 서비스에 적용하는 것을 말합니다.\n모든 변경된 정보는 동기화를 진행하셔야 연동 서비스에 반영됩니다.\n※ 조직도 정보 : 사용자 정보, 조직 정보, 관리자 정보`;
 
     useEffect(() => {
-        const fetchUserData = async () => {
-            const users = await getUsers();
-            let newUsers: UserData[] = [];
-            users.map((user: any) => {
-                newUsers.push({
-                    id: user.id,
-                    name: user.name,
-                    username: user.username,
-                    email: user.email,
-                    address:
-                        user.province + ' ' + user.city + ' ' + user.district + ' ' + user.street + ' ' + user.zipcode,
-                    phone: user.phone,
-                    createdAt: user.createdAt,
-                });
-            });
-            setUserData(newUsers);
-            setFilteredData(newUsers);
-        };
-        fetchUserData();
         setDate(DateFormat());
     }, []);
+
+    useEffect(() => {
+        if (data !== undefined) {
+            setFilteredData(data);
+        }
+    }, [data]);
 
     const SortedDescendingIcon = () => {
         return <BarsArrowDownIcon width={16} height={16} className='ml-1 text-gray-500' />;
@@ -166,15 +176,27 @@ export default function User() {
     };
 
     const searchKeyword = (searchCriteria: string, value: string) => {
-        setFilteredData(
-            userData.filter((d: any) => {
-                return d[searchCriteria].toString().includes(value);
-            })
-        );
+        if (data !== undefined) {
+            setFilteredData(
+                data.filter((d: any) => {
+                    return d[searchCriteria].toString().includes(value);
+                })
+            );
+        }
     };
 
     const handleChange = (event: React.SyntheticEvent, newValue: string) => {
         setSelectedMenu(newValue);
+    };
+
+    const gridRowClick: GridEventListener<'rowClick'> = (params, event, details) => {
+        setShowModal(true);
+        setModalParams(params);
+    };
+
+    const closeModal = () => {
+        setShowModal(false);
+        setModalParams(undefined);
     };
 
     const columns: GridColDef[] = [
@@ -244,6 +266,7 @@ export default function User() {
 
     return (
         <Layout>
+            {modalParams && showModal && <UserInfoModal userInfo={modalParams} open={showModal} onClose={closeModal} />}
             <div className='pt-8 pb-32 px-10 min-w-min'>
                 <div className='flex justify-between mb-8'>
                     <div className='flex items-center'>
@@ -307,11 +330,11 @@ export default function User() {
                 </Box>
                 <div className='mt-8 bg-white rounded-xl p-8 w-full min-w-min'>
                     <div className='mb-2 text-sm text-gray-800'>
-                        {filteredData.length === userData.length
-                            ? `총 ${userData.length}명`
+                        {filteredData.length === data?.length
+                            ? `총 ${data.length}명`
                             : `검색 결과 ${filteredData.length}명`}
                     </div>
-                    {userData && (
+                    {data && (
                         <Box
                             sx={{
                                 width: '100%',
@@ -326,9 +349,11 @@ export default function User() {
                                 rows={filteredData}
                                 pagination
                                 autoHeight
+                                disableColumnMenu
                                 hideFooterSelectedRowCount
                                 columnHeaderHeight={39}
                                 rowHeight={45}
+                                onRowClick={gridRowClick}
                                 initialState={{
                                     pagination: { paginationModel: { pageSize: 5 } },
                                 }}

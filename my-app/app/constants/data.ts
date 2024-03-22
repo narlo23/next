@@ -3,6 +3,7 @@ export const MenuItem = [
         id: 'dashboard',
         icon: '/assets/nav/dashboard.svg',
         name: '대시보드',
+        link: '/pages/dashboard',
         detail: [],
     },
     {
