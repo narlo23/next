@@ -3,6 +3,7 @@ import { Button, Dialog, DialogContent, DialogTitle } from '@mui/material';
 import React, { useEffect, useRef, useState } from 'react';
 
 import { EllipsisHorizontalIcon } from '@heroicons/react/20/solid';
+import DialogHeader from './dialog/dialogHeader';
 
 const UserInfoModal = ({ userInfo, open, onClose }: { userInfo: any; open: boolean; onClose: () => void }) => {
     const [openModal, setOpenModal] = useState(false);
@@ -29,24 +30,7 @@ const UserInfoModal = ({ userInfo, open, onClose }: { userInfo: any; open: boole
     return (
         <div className='w-full h-full flex items-center'>
             <Dialog open={open} maxWidth='lg'>
-                <DialogTitle className='p-0'>
-                    <div className='flex items-center justify-between border-b-2 border-gray-100 py-4 pl-5 pr-6 w-[512px]'>
-                        <p className='font-bold text-lg'>사용자 정보</p>
-                        <div className='w-5 h-5 text-gray-400 cursor-pointer' onClick={onClose}>
-                            <svg
-                                xmlns='http://www.w3.org/2000/svg'
-                                fill='none'
-                                viewBox='0 0 24 24'
-                                strokeWidth='2'
-                                stroke='currentColor'
-                                aria-hidden='true'
-                                className='dialog-header-close-icon'
-                            >
-                                <path strokeLinecap='round' strokeLinejoin='round' d='M6 18L18 6M6 6l12 12'></path>
-                            </svg>
-                        </div>
-                    </div>
-                </DialogTitle>
+                <DialogHeader title='사용자 정보' onClose={onClose} />
                 <DialogContent className='p-0'>
                     <div className='overflow-y-auto max-h-[610px] px-[1.5rem] pt-[1.5rem] pb-[2.5rem]'>
                         <div className='flex gap-7'>

@@ -102,3 +102,48 @@ export const UserMenuItem = [
         name: '퇴직자 목록',
     },
 ];
+
+export const UserColumns = [
+    {
+        field: 'id',
+        name: '아이디',
+        required: false,
+        disabled: true,
+        duplicateCheck: false,
+    },
+    {
+        field: 'name',
+        name: '이름',
+        required: true,
+        disabled: false,
+        duplicateCheck: false,
+    },
+    {
+        field: 'username',
+        name: '유저명',
+        required: true,
+        disabled: false,
+        duplicateCheck: true,
+    },
+    {
+        field: 'phone',
+        name: '전화번호',
+        required: true,
+        disabled: false,
+        duplicateCheck: false,
+    },
+    {
+        field: 'email',
+        name: '이메일',
+        required: true,
+        disabled: false,
+        duplicateCheck: true,
+    },
+    {
+        field: 'address',
+        name: '주소',
+        required: true,
+        disabled: false,
+        duplicateCheck: false,
+    },
+];
