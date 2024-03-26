@@ -12,8 +12,6 @@ import { Button } from '@mui/material';
 import Slider from 'react-slick';
 
 export default function DashBoard() {
-    const url = 'https://www.youtube.com/watch?v=9P6rdqiybaw';
-    const [data, setData] = useState<string>();
     const username = '안효진';
 
     var settings = {
@@ -24,20 +22,6 @@ export default function DashBoard() {
         autoplay: true,
         autoplayspeed: 2000,
     };
-
-    /*
-    useEffect(() => {
-        const fetchMetaData = async () => {
-            const metaData = await getMetaData(url)
-            setData(metaData)
-        }
-        fetchMetaData()
-    }, [])
-
-    useEffect(() => {
-        console.log(data)
-    }, [data])
-    */
 
     return (
         <Layout>

@@ -18,6 +18,16 @@ const CustomTextField = styled(TextField)<TextFieldProps>(() => ({
             borderWidth: '1px',
             borderColor: '#122e87',
         },
+        '&.Mui-disabled fieldset': {
+            borderColor: '#d1d5db',
+        },
+    },
+    '& .Mui-error .MuiOutlinedInput-notchedOutline': {
+        borderColor: '#ff4d26',
+    },
+    '& .Mui-disabled': {
+        backgroundColor: '#f3f4f6',
+        color: '#d1d5db',
     },
 }));
 
@@ -42,6 +52,15 @@ interface DisabledBtnType {
     [key: string]: boolean;
 }
 
+interface ErrorObject {
+    name: boolean;
+    username: boolean;
+    phone: boolean;
+    email: boolean;
+    address: boolean;
+    [key: string]: boolean;
+}
+
 const DEFAULT_IMG_URL = 'https://dev-api.jmember.co.kr/image/my_default.png';
 
 const ERROR_MSG = {
@@ -57,13 +76,32 @@ const PLACEHOLDER_MSG: PlaceholderMessage = {
     email: '이메일을 입력하세요.',
 };
 
-const UserApplyModal = ({ open, onClose }: { open: boolean; onClose: () => void }) => {
+const UserApplyModal = ({
+    open,
+    onClose,
+    onClick,
+    state,
+    info,
+}: {
+    open: boolean;
+    onClose: () => void;
+    onClick: () => void;
+    state: string;
+    info?: any;
+}) => {
     const [value, setValue] = useState<userInfo>({
         name: '',
         username: '',
         phone: '',
         email: '',
         address: '',
+    });
+    const [error, setError] = useState<ErrorObject>({
+        name: false,
+        username: false,
+        phone: false,
+        email: false,
+        address: false,
     });
     const [errorMsg, setErrorMsg] = useState<userInfo>({
         name: '',
@@ -117,15 +155,47 @@ const UserApplyModal = ({ open, onClose }: { open: boolean; onClose: () => void 
                 [field]: event.target.value,
             }));
             if (event.target.value === '') {
+                setError((prevValue) => ({
+                    ...prevValue,
+                    [field]: true,
+                }));
                 setErrorMsg((prevValue) => ({
                     ...prevValue,
                     [field]: ERROR_MSG[field],
                 }));
             } else {
-                setErrorMsg((prevValue) => ({
-                    ...prevValue,
-                    [field]: '',
-                }));
+                if (field === 'email') {
+                    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                    const email = event.target.value;
+                    if (email.length < 4 || email.length > 50 || !emailRegex.test(email)) {
+                        setError((prevValue) => ({
+                            ...prevValue,
+                            [field]: true,
+                        }));
+                        setErrorMsg((prevValue) => ({
+                            ...prevValue,
+                            [field]: '4~50자 사이 이메일 형식으로 입력하세요.',
+                        }));
+                    } else {
+                        setError((prevValue) => ({
+                            ...prevValue,
+                            [field]: false,
+                        }));
+                        setErrorMsg((prevValue) => ({
+                            ...prevValue,
+                            [field]: '',
+                        }));
+                    }
+                } else {
+                    setError((prevValue) => ({
+                        ...prevValue,
+                        [field]: false,
+                    }));
+                    setErrorMsg((prevValue) => ({
+                        ...prevValue,
+                        [field]: '',
+                    }));
+                }
             }
         }
     };
@@ -137,17 +207,21 @@ const UserApplyModal = ({ open, onClose }: { open: boolean; onClose: () => void 
             value.username !== '' &&
             value.phone !== '' &&
             value.email !== '' &&
-            value.address !== '' &&
-            duplicateCheck.email &&
-            duplicateCheck.username
+            value.address !== ''
         ) {
             /* 등록 버튼 활성화 */
-            setApplyDisabled(false);
+            if (state === 'user_register') {
+                if (duplicateCheck.email && duplicateCheck.username) {
+                    setApplyDisabled(false);
+                }
+            } else {
+                setApplyDisabled(false);
+            }
         } else {
             /* 등록 버튼 비활성화 */
             setApplyDisabled(true);
         }
-    }, [value, duplicateCheck]);
+    }, [value, duplicateCheck, state]);
 
     const ChangeProfileBtnClick = () => {
         if (fileInputRef.current) {
@@ -156,6 +230,7 @@ const UserApplyModal = ({ open, onClose }: { open: boolean; onClose: () => void 
     };
 
     const SetDefaultImg = () => {
+        setEditProfileModal(false);
         setSelectedImgUrl(null);
     };
 
@@ -167,10 +242,15 @@ const UserApplyModal = ({ open, onClose }: { open: boolean; onClose: () => void 
                 ...duplicateCheck,
                 [field]: true,
             });
+            setDisabledDuplicateBtn({
+                ...disabledDuplicateBtn,
+                [field]: true,
+            });
         }
     };
 
     const InputFile = (event: any) => {
+        setEditProfileModal(false);
         const file = event.target.files[0];
         if (file) {
             const reader = new FileReader();
@@ -199,13 +279,22 @@ const UserApplyModal = ({ open, onClose }: { open: boolean; onClose: () => void 
     }, [editProfileModal]);
 
     useEffect(() => {
-        console.log(errorMsg);
-    }, [errorMsg]);
+        if (info) {
+            const updatedValue = {
+                name: info.row.name,
+                username: info.row.username,
+                phone: info.row.phone,
+                email: info.row.email,
+                address: info.row.address,
+            };
+            setValue(updatedValue);
+        }
+    }, [info]);
 
     return (
         <div className='w-full h-full flex items-center'>
             <Dialog open={open}>
-                <DialogHeader title='사용자 등록' onClose={onClose} />
+                <DialogHeader title={state === 'user_register' ? '사용자 등록' : '사용자 수정'} onClose={onClose} />
                 <DialogContent className='p-0 overflow-y-auto max-h-[610px]'>
                     <div className='overflow-y-auto max-h-[610px] px-[1.5rem] pt-[1.5rem] pb-[2.5rem]'>
                         <div className='flex'>
@@ -245,7 +334,6 @@ const UserApplyModal = ({ open, onClose }: { open: boolean; onClose: () => void 
                                                     onChange={InputFile}
                                                 />
                                             </div>
-
                                             {editProfileModal && (
                                                 <div
                                                     className='absolute w-40 z-40 py-1 bg-white rounded-md shadow-lg left-8 top-5'
@@ -283,40 +371,65 @@ const UserApplyModal = ({ open, onClose }: { open: boolean; onClose: () => void 
                                                     {userColumn.name}
                                                 </label>
                                                 {userColumn.duplicateCheck ? (
-                                                    <div className='flex justify-between'>
-                                                        <CustomTextField
-                                                            name={userColumn.field}
-                                                            variant='outlined'
-                                                            fullWidth
-                                                            inputProps={{
-                                                                style: {
-                                                                    fontSize: '0.75rem',
-                                                                    padding: '10px 12px',
-                                                                    height: '18px',
-                                                                    lineHeight: '1rem',
-                                                                    color: '#6b7280',
-                                                                    boxShadow: 'none',
-                                                                },
-                                                            }}
-                                                            value={value[userColumn.field]}
-                                                            onChange={InputText}
-                                                            placeholder={PLACEHOLDER_MSG[userColumn.field]}
-                                                            className='w-[205px]'
-                                                        />
-                                                        <Button
-                                                            data-field={userColumn.field}
-                                                            variant='outlined'
-                                                            className='py-[10px] px-[15px] text-gray-700 text-sm flex leading-4 border-gray-300 hover:bg-gray-100 hover:border-gray-300 disabled:bg-gray-50 disabled:text-gray-300'
-                                                            disabled={disabledDuplicateBtn[userColumn.field]}
-                                                            onClick={CheckDuplicateUser}
-                                                        >
-                                                            중복 확인
-                                                        </Button>
-                                                    </div>
+                                                    state === 'user_register' ? (
+                                                        <div className='flex justify-between'>
+                                                            <CustomTextField
+                                                                name={userColumn.field}
+                                                                variant='outlined'
+                                                                fullWidth
+                                                                error={error[userColumn.field]}
+                                                                inputProps={{
+                                                                    style: {
+                                                                        fontSize: '0.75rem',
+                                                                        padding: '10px 12px',
+                                                                        height: '18px',
+                                                                        lineHeight: '1rem',
+                                                                        color: '#6b7280',
+                                                                        boxShadow: 'none',
+                                                                    },
+                                                                }}
+                                                                value={value[userColumn.field]}
+                                                                onChange={InputText}
+                                                                placeholder={PLACEHOLDER_MSG[userColumn.field]}
+                                                                className='w-[205px]'
+                                                            />
+                                                            <Button
+                                                                data-field={userColumn.field}
+                                                                variant='outlined'
+                                                                className='py-[10px] px-[15px] text-gray-700 text-sm flex leading-4 border-gray-300 hover:bg-gray-100 hover:border-gray-300 disabled:bg-gray-50 disabled:text-gray-300'
+                                                                disabled={disabledDuplicateBtn[userColumn.field]}
+                                                                onClick={CheckDuplicateUser}
+                                                            >
+                                                                중복 확인
+                                                            </Button>
+                                                        </div>
+                                                    ) : (
+                                                        <div className='flex justify-between'>
+                                                            <CustomTextField
+                                                                name={userColumn.field}
+                                                                variant='outlined'
+                                                                error={error[userColumn.field]}
+                                                                fullWidth
+                                                                disabled
+                                                                inputProps={{
+                                                                    style: {
+                                                                        fontSize: '0.75rem',
+                                                                        padding: '10px 12px',
+                                                                        height: '18px',
+                                                                        lineHeight: '1rem',
+                                                                        color: '#6b7280',
+                                                                        boxShadow: 'none',
+                                                                    },
+                                                                }}
+                                                                value={value[userColumn.field]}
+                                                            />
+                                                        </div>
+                                                    )
                                                 ) : (
                                                     <CustomTextField
                                                         name={userColumn.field}
                                                         variant='outlined'
+                                                        error={error[userColumn.field]}
                                                         fullWidth
                                                         inputProps={{
                                                             style: {
@@ -342,9 +455,9 @@ const UserApplyModal = ({ open, onClose }: { open: boolean; onClose: () => void 
                                                             className='w-4 h-4 mr-1 text-dangerOr'
                                                         >
                                                             <path
-                                                                fill-rule='evenodd'
+                                                                fillRule='evenodd'
                                                                 d='M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z'
-                                                                clip-rule='evenodd'
+                                                                clipRule='evenodd'
                                                             ></path>
                                                         </svg>
                                                         {errorMsg[userColumn.field]}
@@ -370,8 +483,9 @@ const UserApplyModal = ({ open, onClose }: { open: boolean; onClose: () => void 
                         variant='contained'
                         className='w-24 rounded-md bg-main-navy text-white hover:bg-secondary ml-2 py-[10px] leading-4'
                         disabled={applyDisabled}
+                        onClick={onClick}
                     >
-                        등록
+                        {state === 'user_register' ? '등록' : '저장'}
                     </Button>
                 </div>
             </Dialog>

@@ -28,6 +28,7 @@ import { getUsers } from '@/app/api/user';
 import { styled } from '@mui/material/styles';
 import { useQuery } from 'react-query';
 import UserInfoModal from '@/app/components/users/userInfoModal';
+import UserApplyModal from '@/app/components/users/userApplyModal';
 
 interface UserData {
     id: number;
@@ -150,9 +151,12 @@ const fetchUserList = async () => {
 export default function User() {
     const [selectedMenu, setSelectedMenu] = useState('user_management');
     const [date, setDate] = useState<string>('');
-    const { isLoading, error, data } = useQuery('userlist', fetchUserList);
+    const { isLoading, error, data } = useQuery('userlist', fetchUserList, {
+        refetchOnWindowFocus: false,
+    });
     const [filteredData, setFilteredData] = useState<UserData[]>([]);
     const [showModal, setShowModal] = useState(false);
+    const [modalContent, setModalContent] = useState('');
     const [modalParams, setModalParams] = useState<GridRowParams>();
 
     const SYNC_INFO_TEXT = `조직도 동기화란 변경된 조직도 정보를 연동 서비스에 적용하는 것을 말합니다.\n모든 변경된 정보는 동기화를 진행하셔야 연동 서비스에 반영됩니다.\n※ 조직도 정보 : 사용자 정보, 조직 정보, 관리자 정보`;
@@ -190,13 +194,78 @@ export default function User() {
     };
 
     const gridRowClick: GridEventListener<'rowClick'> = (params, event, details) => {
+        setModalContent('user_info');
         setShowModal(true);
         setModalParams(params);
     };
 
     const closeModal = () => {
         setShowModal(false);
+        setModalContent('');
         setModalParams(undefined);
+    };
+
+    const registerUser = () => {
+        setShowModal(true);
+        setModalContent('user_register');
+    };
+
+    const modifyBtnClick = () => {
+        setModalContent('user_modify');
+    };
+
+    const storeModifyResult = () => {
+        setShowModal(false);
+        setModalContent('');
+        setModalParams(undefined);
+    };
+
+    const registerUserResult = () => {
+        setShowModal(false);
+        setModalContent('');
+        setModalParams(undefined);
+    };
+
+    const DisplayModal = () => {
+        if (showModal) {
+            if (modalContent === 'user_info') {
+                /* 사용자 정보 */
+                if (modalParams) {
+                    return (
+                        <UserInfoModal
+                            userInfo={modalParams}
+                            open={showModal}
+                            onClose={closeModal}
+                            onClick={modifyBtnClick}
+                        />
+                    );
+                }
+            } else if (modalContent === 'user_register') {
+                /* 사용자 등록 */
+                return (
+                    <UserApplyModal
+                        open={showModal}
+                        onClose={closeModal}
+                        state={modalContent}
+                        onClick={registerUserResult}
+                    />
+                );
+            } else if (modalContent === 'user_modify') {
+                /* 사용자 수정 */
+                if (modalParams) {
+                    return (
+                        <UserApplyModal
+                            open={showModal}
+                            onClose={closeModal}
+                            state={modalContent}
+                            info={modalParams}
+                            onClick={storeModifyResult}
+                        />
+                    );
+                }
+            }
+        }
+        return <></>;
     };
 
     const columns: GridColDef[] = [
@@ -266,7 +335,7 @@ export default function User() {
 
     return (
         <Layout>
-            {modalParams && showModal && <UserInfoModal userInfo={modalParams} open={showModal} onClose={closeModal} />}
+            <DisplayModal />
             <div className='pt-8 pb-32 px-10 min-w-min'>
                 <div className='flex justify-between mb-8'>
                     <div className='flex items-center'>
@@ -367,6 +436,7 @@ export default function User() {
                                     toolbar: {
                                         data: columns,
                                         setData: searchKeyword,
+                                        registerUser: registerUser,
                                     },
                                 }}
                                 sx={{

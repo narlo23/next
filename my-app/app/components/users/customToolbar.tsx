@@ -10,7 +10,7 @@ import {
     TextField,
     styled,
 } from '@mui/material';
-import { GridToolbarContainer } from '@mui/x-data-grid';
+import { GridColDef, GridToolbarContainer } from '@mui/x-data-grid';
 import { useState } from 'react';
 
 const StyledSelect = styled(Select)<SelectProps>(() => ({
@@ -33,7 +33,15 @@ const StyledSelect = styled(Select)<SelectProps>(() => ({
     },
 }));
 
-const CustomToolbar = ({ data, setData }: { data: any; setData: any }) => {
+const CustomToolbar = ({
+    data,
+    setData,
+    registerUser,
+}: {
+    data: GridColDef[];
+    setData: (searchCriteria: string, value: string) => void;
+    registerUser: () => void;
+}) => {
     const [searchCriteria, setSearchCriteria] = useState('id');
     const VISIBLE_FIELDS = ['id', 'name', 'username', 'email', 'address'];
     const [searchWord, setSearchWord] = useState('');
@@ -41,7 +49,7 @@ const CustomToolbar = ({ data, setData }: { data: any; setData: any }) => {
 
     const handleSelectChange = (event: SelectChangeEvent<unknown>) => {
         setSearchCriteria(event.target.value as string);
-        setData(event.target.value, searchWord);
+        setData(event.target.value as string, searchWord);
     };
 
     const handleDeleteClick = (): void => {
@@ -140,6 +148,7 @@ const CustomToolbar = ({ data, setData }: { data: any; setData: any }) => {
                 <Button
                     variant='outlined'
                     className='rounded-md border-gray-300 text-gray-700 px-[11px] hover:border-gray-300 hover:bg-gray-100 cursor-pointer'
+                    onClick={registerUser}
                 >
                     <PlusIcon width={16} height={16} />
                     <div className='font-medium ml-1 pr-1 text-xs'>등록</div>

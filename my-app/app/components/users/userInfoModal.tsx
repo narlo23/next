@@ -5,14 +5,20 @@ import React, { useEffect, useRef, useState } from 'react';
 import { EllipsisHorizontalIcon } from '@heroicons/react/20/solid';
 import DialogHeader from './dialog/dialogHeader';
 
-const UserInfoModal = ({ userInfo, open, onClose }: { userInfo: any; open: boolean; onClose: () => void }) => {
+const UserInfoModal = ({
+    userInfo,
+    open,
+    onClose,
+    onClick,
+}: {
+    userInfo: any;
+    open: boolean;
+    onClose: () => void;
+    onClick: () => void;
+}) => {
     const [openModal, setOpenModal] = useState(false);
 
     const ref = useRef<any>();
-
-    const openModalBtnClick = () => {
-        setOpenModal(!openModal);
-    };
 
     useEffect(() => {
         const handleClickOutside = (e: any) => {
@@ -95,6 +101,7 @@ const UserInfoModal = ({ userInfo, open, onClose }: { userInfo: any; open: boole
                     <Button
                         variant='contained'
                         className='w-24 rounded-md bg-main-navy text-white hover:bg-secondary ml-2 py-[10px] leading-4'
+                        onClick={onClick}
                     >
                         수정
                     </Button>
