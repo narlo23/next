@@ -2,7 +2,7 @@
 
 import React, { ChangeEvent, useEffect, useRef, useState } from 'react';
 import { Dialog, DialogContent, Button, TextField, styled, TextFieldProps } from '@mui/material';
-import DialogHeader from './dialog/dialogHeader';
+import DialogHeader from '@/app/components/users/dialog/dialogHeader';
 import { UserColumns } from '@/app/constants/data';
 
 const CustomTextField = styled(TextField)<TextFieldProps>(() => ({

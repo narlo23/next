@@ -3,7 +3,7 @@ import { Button, Dialog, DialogContent, DialogTitle } from '@mui/material';
 import React, { useEffect, useRef, useState } from 'react';
 
 import { EllipsisHorizontalIcon } from '@heroicons/react/20/solid';
-import DialogHeader from './dialog/dialogHeader';
+import DialogHeader from '@/app/components/users/dialog/dialogHeader';
 
 const UserInfoModal = ({
     userInfo,

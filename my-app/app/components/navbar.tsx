@@ -1,16 +1,13 @@
 'use client';
 
-import React, { useEffect } from 'react';
-import { MenuItem, ServiceMenuItem } from '../constants/data';
+import React from 'react';
+import { MenuItem, ServiceMenuItem } from '@/app/constants/data';
 import { useState } from 'react';
 import { ArrowTopRightOnSquareIcon, ChevronUpIcon, ChevronDownIcon } from '@heroicons/react/20/solid';
 import Image from 'next/image';
-import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 
-export default function Navbar() {
-    const pathname = usePathname();
-    const [url, setUrl] = useState('');
+export default function Navbar({ selected }: { selected: string }) {
     const [open, setOpen] = useState(Array(MenuItem.length).fill(true));
 
     const ShowDetail = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
@@ -27,10 +24,6 @@ export default function Navbar() {
         }
     };
 
-    useEffect(() => {
-        setUrl(pathname);
-    }, [pathname]);
-
     return (
         <div className='flex-1 z-10 w-64 bg-white pb-4 overflow-y-auto flex flex-col'>
             <nav className='mt-2 flex-1 text-main-navy '>
@@ -38,29 +31,59 @@ export default function Navbar() {
                     return (
                         <div key={i}>
                             <div data-id={i} onClick={ShowDetail} className='cursor-pointer'>
-                                <div
-                                    key={menu.id}
-                                    className='hover:bg-active-blue hover:text-gray-900 pl-4 h-10 flex items-center px-4 py-2 text-main-navy text-md font-bold'
-                                >
-                                    <Image
-                                        src={menu.icon}
-                                        width={20}
-                                        height={20}
-                                        className='mr-2'
-                                        alt={menu.name}
-                                    ></Image>
-                                    <p className='w-full'>{menu.name}</p>
-                                    {menu.detail.length > 0 &&
-                                        (open[i] ? (
-                                            <div>
-                                                <ChevronUpIcon width={16} color='rgb(156, 163, 175)' />
-                                            </div>
-                                        ) : (
-                                            <div>
-                                                <ChevronDownIcon width={16} color='rgb(156, 163, 175)' />
-                                            </div>
-                                        ))}
-                                </div>
+                                {menu.hasOwnProperty('link') ? (
+                                    <Link href={menu.link}>
+                                        <div
+                                            key={menu.id}
+                                            className={`hover:bg-active-blue hover:text-gray-900 pl-4 h-10 flex items-center px-4 py-2 text-main-navy text-md font-bold ${
+                                                selected === menu.id && 'text-secondary bg-active-blue'
+                                            }`}
+                                        >
+                                            <Image
+                                                src={menu.icon}
+                                                width={20}
+                                                height={20}
+                                                className={`mr-2 ${selected === menu.id && 'fill-secondary'}`}
+                                                alt={menu.name}
+                                            ></Image>
+                                            <p className='w-full'>{menu.name}</p>
+                                            {menu.detail.length > 0 &&
+                                                (open[i] ? (
+                                                    <div>
+                                                        <ChevronUpIcon width={16} color='rgb(156, 163, 175)' />
+                                                    </div>
+                                                ) : (
+                                                    <div>
+                                                        <ChevronDownIcon width={16} color='rgb(156, 163, 175)' />
+                                                    </div>
+                                                ))}
+                                        </div>
+                                    </Link>
+                                ) : (
+                                    <div
+                                        key={menu.id}
+                                        className='hover:bg-active-blue hover:text-gray-900 pl-4 h-10 flex items-center px-4 py-2 text-main-navy text-md font-bold'
+                                    >
+                                        <Image
+                                            src={menu.icon}
+                                            width={20}
+                                            height={20}
+                                            className='mr-2'
+                                            alt={menu.name}
+                                        ></Image>
+                                        <p className='w-full'>{menu.name}</p>
+                                        {menu.detail.length > 0 &&
+                                            (open[i] ? (
+                                                <div>
+                                                    <ChevronUpIcon width={16} color='rgb(156, 163, 175)' />
+                                                </div>
+                                            ) : (
+                                                <div>
+                                                    <ChevronDownIcon width={16} color='rgb(156, 163, 175)' />
+                                                </div>
+                                            ))}
+                                    </div>
+                                )}
                             </div>
                             {menu.detail.length > 0 &&
                                 open[i] &&

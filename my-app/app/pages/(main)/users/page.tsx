@@ -3,7 +3,6 @@
 import { Button, Box, Pagination, Stack, Tooltip, Tabs, Tab, PaginationProps, TabsProps } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 
-import { Layout } from '@/app/components/layout';
 import CustomToolbar from '@/app/components/users/customToolbar';
 
 import {
@@ -334,7 +333,7 @@ export default function User() {
     ];
 
     return (
-        <Layout>
+        <>
             <DisplayModal />
             <div className='pt-8 pb-32 px-10 min-w-min'>
                 <div className='flex justify-between mb-8'>
@@ -452,6 +451,6 @@ export default function User() {
                     )}
                 </div>
             </div>
-        </Layout>
+        </>
     );
 }

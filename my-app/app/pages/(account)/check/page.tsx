@@ -3,7 +3,7 @@
 import React from 'react';
 import { Button } from '@mui/material';
 import { ExclamationCircleIcon } from '@heroicons/react/20/solid';
-import Header from '../../../components/header';
+import Header from '@/app/components/header';
 
 export default function Check() {
     const emailRef = React.useRef<HTMLInputElement>(null);
