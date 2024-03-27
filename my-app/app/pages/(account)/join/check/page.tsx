@@ -5,17 +5,11 @@ import Header from '@/app/components/header';
 import { Button } from '@mui/material';
 import { ExclamationCircleIcon } from '@heroicons/react/20/solid';
 
-export default function Check() {
+const Check = () => {
     const emailRef = React.useRef<HTMLInputElement>(null);
     const [errorText, setErrorText] = React.useState('');
 
-    /*
-    const InputEmailVal = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setEmail(e.target.value)
-    }
-    */
-
-    const Submit = () => {
+    const submit = () => {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
         if (emailRef.current) {
@@ -35,7 +29,7 @@ export default function Check() {
     };
 
     return (
-        <div className='h-screen w-screen bg-gray-50 flex flex-col'>
+        <>
             <Header pad='pl-4' />
             <div className='flex text-main-navy justify-center flex-1'>
                 <div className='w-80 h-full flex flex-col items-center justify-center'>
@@ -76,7 +70,7 @@ export default function Check() {
                                 type='button'
                                 variant='contained'
                                 className='w-full bg-main-navy rounded-md text-base py-4 px-7 hover:bg-main-blue'
-                                onClick={Submit}
+                                onClick={submit}
                             >
                                 <div className='flex text-base leading-4'>무료 체험하기</div>
                             </Button>
@@ -84,6 +78,7 @@ export default function Check() {
                     </div>
                 </div>
             </div>
-        </div>
+        </>
     );
-}
+};
+export default Check;

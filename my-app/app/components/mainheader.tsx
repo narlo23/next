@@ -1,12 +1,12 @@
 'use client';
 
+import { useState, useEffect, useRef } from 'react';
 import Header from '@/app/components/header';
 import { Button } from '@mui/material';
 import { QuestionMarkCircleIcon } from '@heroicons/react/20/solid';
 import Link from 'next/link';
-import { useState, useEffect, useRef } from 'react';
 
-export default function MainHeader() {
+const MainHeader = ({ setSelected }: { setSelected: any }) => {
     const [modal, setModal] = useState<boolean>(false);
 
     const ref = useRef<any>();
@@ -25,7 +25,7 @@ export default function MainHeader() {
     }, [modal]);
 
     return (
-        <Header pad='px-8'>
+        <Header pad='px-8' setSelected={setSelected}>
             <div className='flex text-black gap-4 items-center'>
                 <Link href='https://jiransoft.gitbook.io/manual/' target='_blank'>
                     <Button
@@ -37,7 +37,8 @@ export default function MainHeader() {
                     </Button>
                 </Link>
                 <div className='w-7 h-7'>
-                    <a>
+                    {/* 고객지원 icon, href 추가 필요 */}
+                    <Link href=''>
                         <svg
                             xmlns='http://www.w3.org/2000/svg'
                             fill='none'
@@ -54,7 +55,7 @@ export default function MainHeader() {
                                 d='M5.84 14.73V9.16A6.16 6.16 0 0112 3a6.19 6.19 0 016.16 6.16v5.57m1.3 2.3v1a2.52 2.52 0 01-2.52 2.52H12m-8.75-8.82h2.59v3.85a1.29 1.29 0 01-1.29 1.29 1.291 1.291 0 01-1.3-1.29v-3.85zm14.92 0h1.29a1.29 1.29 0 011.3 1.27v2.55a1.29 1.29 0 01-2.58 0v-3.82h-.01z'
                             ></path>
                         </svg>
-                    </a>
+                    </Link>
                 </div>
                 <div className='cursor-pointer relative'>
                     <div
@@ -70,15 +71,14 @@ export default function MainHeader() {
                             className='z-20 absolute flex flex-col justify-center right-0 mt-6 w-[192px] h-[116px] bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 text-sm'
                             ref={ref}
                         >
-                            <a className='px-4 py-2'>내 정보</a>
-                            <a className='px-4 py-2'>회사 정보</a>
-                            <a className='px-4 py-2' href='/pages/signin'>
-                                로그아웃
-                            </a>
+                            <a className='px-4 py-2 cursor-pointer'>내 정보</a>
+                            <a className='px-4 py-2 cursor-pointer'>회사 정보</a>
+                            <a className='px-4 py-2 cursor-pointer'>로그아웃</a>
                         </div>
                     )}
                 </div>
             </div>
         </Header>
     );
-}
+};
+export default MainHeader;

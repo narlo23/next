@@ -1,12 +1,12 @@
 'use client';
 
 import Header from '@/app/components/header';
-import { Button, styled, ButtonProps } from '@mui/material';
+import { Button } from '@mui/material';
 import React from 'react';
 
 const Logout = () => {
     return (
-        <div className='h-screen w-screen bg-gray-50 flex flex-col'>
+        <>
             <Header pad='px-8' shadow='md' />
             <div className='flex-1 flex flex-col items-center justify-center text-gray-700'>
                 <p className='text-2xl font-semibold text-main-navy'>로그아웃</p>
@@ -66,7 +66,7 @@ const Logout = () => {
                     </div>
                 </div>
             </div>
-        </div>
+        </>
     );
 };
 

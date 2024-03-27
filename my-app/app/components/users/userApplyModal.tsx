@@ -31,7 +31,7 @@ const CustomTextField = styled(TextField)<TextFieldProps>(() => ({
     },
 }));
 
-interface userInfo {
+interface UserInfo {
     name: string;
     username: string;
     phone: string;
@@ -89,7 +89,7 @@ const UserApplyModal = ({
     state: string;
     info?: any;
 }) => {
-    const [value, setValue] = useState<userInfo>({
+    const [value, setValue] = useState<UserInfo>({
         name: '',
         username: '',
         phone: '',
@@ -103,7 +103,7 @@ const UserApplyModal = ({
         email: false,
         address: false,
     });
-    const [errorMsg, setErrorMsg] = useState<userInfo>({
+    const [errorMsg, setErrorMsg] = useState<UserInfo>({
         name: '',
         username: '',
         phone: '',

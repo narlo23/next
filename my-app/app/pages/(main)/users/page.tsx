@@ -1,8 +1,6 @@
 'use client';
-
-import { Button, Box, Pagination, Stack, Tooltip, Tabs, Tab, PaginationProps, TabsProps } from '@mui/material';
 import React, { useEffect, useState } from 'react';
-
+import { Button, Box, Pagination, Stack, Tooltip, Tabs, Tab, PaginationProps, TabsProps } from '@mui/material';
 import CustomToolbar from '@/app/components/users/customToolbar';
 
 import {
@@ -147,7 +145,7 @@ const fetchUserList = async () => {
     return newUsers;
 };
 
-export default function User() {
+const User = () => {
     const [selectedMenu, setSelectedMenu] = useState('user_management');
     const [date, setDate] = useState<string>('');
     const { isLoading, error, data } = useQuery('userlist', fetchUserList, {
@@ -453,4 +451,5 @@ export default function User() {
             </div>
         </>
     );
-}
+};
+export default User;

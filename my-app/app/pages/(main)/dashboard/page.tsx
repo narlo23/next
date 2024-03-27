@@ -9,7 +9,7 @@ import { ChevronRightIcon } from '@heroicons/react/20/solid';
 import { Button } from '@mui/material';
 import Slider from 'react-slick';
 
-export default function DashBoard() {
+const DashBoard = () => {
     const username = '안효진';
 
     var settings = {
@@ -295,4 +295,5 @@ export default function DashBoard() {
             </div>
         </div>
     );
-}
+};
+export default DashBoard;

@@ -1,14 +1,15 @@
 export const MenuItem = [
+    /* dashboard > 메뉴 목록 데이터 */
     {
         id: 'dashboard',
-        icon: '/assets/nav/dashboard.svg',
+        icon: 'dashboard',
         name: '대시보드',
         link: '/pages/dashboard',
         detail: [],
     },
     {
         id: 'group',
-        icon: '/assets/nav/group.svg',
+        icon: 'group',
         name: '조직',
         detail: [
             {
@@ -33,7 +34,7 @@ export const MenuItem = [
     },
     {
         id: 'operate',
-        icon: '/assets/nav/operate.svg',
+        icon: 'operate',
         name: '운영',
         detail: [
             {
@@ -78,6 +79,7 @@ export const MenuItem = [
 ];
 
 export const ServiceMenuItem = [
+    /* dashboard > 연결 서비스 메뉴 목록 데이터 */
     {
         id: 'office_wave',
         icon: 'https://dev-org.officenext.net/_next/image?url=https%3A%2F%2Fdev-api.jmember.co.kr%2Fapi%2Fimages%2F417c3f64-4b22-41ee-a852-b4a7767c3277&w=96&q=75',
@@ -104,6 +106,7 @@ export const UserMenuItem = [
 ];
 
 export const UserColumns = [
+    /* user > datagrid column 데이터 */
     {
         field: 'id',
         name: '아이디',
