@@ -2,9 +2,20 @@
 
 import Header from '@/app/components/header';
 import { Button } from '@mui/material';
+import { useRouter } from 'next/navigation';
 import React from 'react';
 
 const Logout = () => {
+    const router = useRouter();
+
+    const serviceLogout = () => {
+        const login = localStorage.getItem('login');
+        if (login) {
+            localStorage.removeItem('login');
+            router.push('/pages/signin');
+        }
+    };
+
     return (
         <>
             <Header pad='px-8' shadow='md' />
@@ -37,6 +48,7 @@ const Logout = () => {
                                 border: '1px solid rgb(13, 28, 75)',
                             },
                         }}
+                        onClick={serviceLogout}
                     >
                         이 서비스만 로그아웃
                     </Button>
@@ -51,6 +63,7 @@ const Logout = () => {
                             lineHeight: '1rem',
                             padding: '16px 27px',
                         }}
+                        onClick={serviceLogout}
                     >
                         오피스넥스트 통합 로그아웃
                     </Button>

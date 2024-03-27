@@ -1,5 +1,3 @@
-import '@/app/styles/globals.css';
-
 const MainLayout = ({
     children,
 }: Readonly<{

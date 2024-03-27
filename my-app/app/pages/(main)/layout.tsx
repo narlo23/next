@@ -1,9 +1,9 @@
 'use client';
 
-import '@/app/styles/globals.css';
 import MainHeader from '@/app/components/mainheader';
 import Navbar from '@/app/components/navbar';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { redirect } from 'next/navigation';
 
 const MainLayout = ({
     children,
@@ -11,8 +11,18 @@ const MainLayout = ({
     children: React.ReactNode;
 }>) => {
     const [selectedMenu, setSelectedMenu] = useState({ id: 'dashboard', subid: '' });
+    const [loading, setLoading] = useState(true);
 
-    return (
+    useEffect(() => {
+        const login = localStorage.getItem('login');
+        if (!login) {
+            redirect('/pages/signin');
+        } else {
+            setLoading(false);
+        }
+    }, []);
+
+    return !loading ? (
         <div className='h-screen w-screen bg-gray-50 flex flex-col leading-4'>
             <MainHeader setSelected={setSelectedMenu} />
             <div className='h-full flex min-h-0'>
@@ -22,6 +32,8 @@ const MainLayout = ({
                 <div className='flex flex-col flex-1 overflow-auto'>{children}</div>
             </div>
         </div>
+    ) : (
+        <></>
     );
 };
 export default MainLayout;

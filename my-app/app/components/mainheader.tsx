@@ -2,14 +2,26 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Header from '@/app/components/header';
-import { Button } from '@mui/material';
+import { Button, ButtonProps, styled } from '@mui/material';
 import { QuestionMarkCircleIcon } from '@heroicons/react/20/solid';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 const MainHeader = ({ setSelected }: { setSelected: any }) => {
     const [modal, setModal] = useState<boolean>(false);
+    const router = useRouter();
 
     const ref = useRef<any>();
+
+    const CustomButton = styled(Button)<ButtonProps>(() => ({
+        border: '1px solid #d1d5db',
+        padding: '8px 13px',
+        borderRadius: '0.375rem',
+        ':hover': {
+            border: '1px solid #d1d5db',
+            backgroundColor: 'rgb(243, 244, 246)',
+        },
+    }));
 
     useEffect(() => {
         const handleClickOutside = (e: any) => {
@@ -24,17 +36,23 @@ const MainHeader = ({ setSelected }: { setSelected: any }) => {
         };
     }, [modal]);
 
+    const logout = () => {
+        const login = localStorage.getItem('login');
+        if (login) {
+            router.push('/pages/logout');
+        }
+    };
+
     return (
         <Header pad='px-8' setSelected={setSelected}>
             <div className='flex text-black gap-4 items-center'>
                 <Link href='https://jiransoft.gitbook.io/manual/' target='_blank'>
-                    <Button
+                    <CustomButton
                         variant='outlined'
-                        className='border-[#d1d5db] hover:border-[#d1d5db] py-2 px-[13px] rounded-md'
                         startIcon={<QuestionMarkCircleIcon className='text-secondary' width={16} />}
                     >
                         <div className='text-secondary h-5 flex items-center'>사용가이드</div>
-                    </Button>
+                    </CustomButton>
                 </Link>
                 <div className='w-7 h-7'>
                     {/* 고객지원 icon, href 추가 필요 */}
@@ -73,7 +91,9 @@ const MainHeader = ({ setSelected }: { setSelected: any }) => {
                         >
                             <a className='px-4 py-2 cursor-pointer'>내 정보</a>
                             <a className='px-4 py-2 cursor-pointer'>회사 정보</a>
-                            <a className='px-4 py-2 cursor-pointer'>로그아웃</a>
+                            <a className='px-4 py-2 cursor-pointer' onClick={logout}>
+                                로그아웃
+                            </a>
                         </div>
                     )}
                 </div>

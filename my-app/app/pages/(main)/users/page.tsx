@@ -110,7 +110,7 @@ const CustomPagination = () => {
     );
 };
 
-const DateFormat = () => {
+const dateFormat = () => {
     const date = new Date();
     let month = date.getMonth() + 1;
     let day: number = date.getDate();
@@ -159,7 +159,7 @@ const User = () => {
     const SYNC_INFO_TEXT = `조직도 동기화란 변경된 조직도 정보를 연동 서비스에 적용하는 것을 말합니다.\n모든 변경된 정보는 동기화를 진행하셔야 연동 서비스에 반영됩니다.\n※ 조직도 정보 : 사용자 정보, 조직 정보, 관리자 정보`;
 
     useEffect(() => {
-        setDate(DateFormat());
+        setDate(dateFormat());
     }, []);
 
     useEffect(() => {

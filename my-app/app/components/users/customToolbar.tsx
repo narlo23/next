@@ -14,6 +14,9 @@ import {
 import { GridColDef, GridToolbarContainer } from '@mui/x-data-grid';
 
 const StyledSelect = styled(Select)<SelectProps>(() => ({
+    width: '128px',
+    height: '2.375rem',
+    fontSize: '12px',
     '.MuiOutlinedInput-input': {
         padding: '0.75rem 14px',
     },
@@ -67,14 +70,13 @@ const CustomToolbar = ({
 
     return (
         <GridToolbarContainer className='flex justify-between gap-0 mb-4'>
-            <div>
+            <div className='text-xs'>
                 <FormControl>
                     <StyledSelect
                         variant='outlined'
                         value={searchCriteria}
                         onChange={handleSelectChange}
                         IconComponent={ChevronDownIcon}
-                        className='w-32 h-[2.375rem] text-xs rounded-r-none'
                         MenuProps={{
                             sx: {
                                 '.Mui-selected': {
