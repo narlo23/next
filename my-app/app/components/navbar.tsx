@@ -6,7 +6,13 @@ import { ArrowTopRightOnSquareIcon, ChevronUpIcon, ChevronDownIcon } from '@hero
 import Link from 'next/link';
 import { DashBoardIcon, GroupIcon, OperateIcon, ServiceIcon } from '@/app/components/icons';
 
-const Navbar = ({ selected, setSelected }: { selected: { id: string; subid: string }; setSelected: any }) => {
+const Navbar = ({
+    selected,
+    setSelected,
+}: {
+    selected: { id: string | null; subid: string | null };
+    setSelected: any;
+}) => {
     const [open, setOpen] = useState(Array(MenuItem.length).fill(true));
 
     const showDetail = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {

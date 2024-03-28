@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_END_POINT = 'https://koreanjson.com/';
+const API_END_POINT = 'http://localhost:5000/';
 
 /* 사용자 리스트 가져오기 */
 export const getUsers = async () => {
@@ -13,22 +13,22 @@ export const getUsers = async () => {
 };
 
 /* 사용자 생성 */
-export const addUser = async () => {
+export const addUser = async (userData: any) => {
     try {
+        const date = new Date();
         const data = {
-            id: '',
-            name: '',
-            username: '',
-            email: '',
-            phone: '',
+            name: userData.name,
+            username: userData.username,
+            email: userData.email,
+            phone: userData.phone,
             website: '',
             province: '',
-            city: '',
+            city: userData.address,
             district: '',
             street: '',
             zipcode: '',
-            createdAt: '',
-            updatedAt: '',
+            createdAt: date,
+            updatedAt: date,
         };
         const res = await axios.post(API_END_POINT + 'users', data);
         return res.data;
@@ -48,10 +48,12 @@ export const getUserInfo = async (id: number) => {
 };
 
 /* 사용자 수정 */
-export const modifyUser = async (id: number) => {
+export const modifyUser = async (id: number, userData: any) => {
     /* 수정할 정보 넘겨주기 */
     try {
-        const res = await axios.put(API_END_POINT + `users/${id}`);
+        const date = new Date();
+        userData['updatedAt'] = date;
+        const res = await axios.put(API_END_POINT + `users/${id}`, userData);
         return res.data;
     } catch (e: any) {
         return e.message;

@@ -10,6 +10,7 @@ import {
     SelectProps,
     TextField,
     styled,
+    ButtonProps,
 } from '@mui/material';
 import { GridColDef, GridToolbarContainer } from '@mui/x-data-grid';
 
@@ -17,7 +18,14 @@ const StyledSelect = styled(Select)<SelectProps>(() => ({
     width: '128px',
     height: '2.375rem',
     fontSize: '12px',
-    '.MuiOutlinedInput-input': {
+    '&.MuiSelect-root': {
+        borderRadius: 0,
+    },
+    '& .MuiOutlinedInput-notchedOutline': {
+        borderTopRightRadius: '0px',
+        borderBottomRightRadius: '0px',
+    },
+    '& .MuiOutlinedInput-input': {
         padding: '0.75rem 14px',
     },
     '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
@@ -33,6 +41,18 @@ const StyledSelect = styled(Select)<SelectProps>(() => ({
     },
     '.MuiButtonBase-root-MuiMenuItem-root': {
         backgroundColor: 'white',
+    },
+}));
+
+const CustomRegistrationBtn = styled(Button)<ButtonProps>(() => ({
+    borderColor: '#d1d5db',
+    color: '#374151',
+    padding: '5px 11px',
+    cursor: 'pointer',
+    borderRadius: '0.375rem',
+    ':hover': {
+        borderColor: '#d1d5db',
+        backgroundColor: '#f3f4f6',
     },
 }));
 
@@ -79,6 +99,9 @@ const CustomToolbar = ({
                         IconComponent={ChevronDownIcon}
                         MenuProps={{
                             sx: {
+                                '.MuiMenuItem-root': {
+                                    fontSize: '12px',
+                                },
                                 '.Mui-selected': {
                                     backgroundColor: 'white !important',
                                     fontWeight: 700,
@@ -96,7 +119,7 @@ const CustomToolbar = ({
                         {data.map((d: any, i: number) => {
                             if (VISIBLE_FIELDS.includes(d.field)) {
                                 return (
-                                    <MenuItem value={d.field} className='text-xs' key={i}>
+                                    <MenuItem value={d.field} key={i}>
                                         {d.headerName}
                                     </MenuItem>
                                 );
@@ -104,12 +127,14 @@ const CustomToolbar = ({
                         })}
                     </StyledSelect>
                 </FormControl>
-                <FormControl className='ml-[-1px]'>
+                <FormControl>
                     <TextField
-                        className='rounded-l-none'
                         value={searchWord}
                         placeholder='검색어 입력'
                         onChange={changeInputText}
+                        sx={{
+                            marginLeft: '-1px',
+                        }}
                         InputProps={{
                             startAdornment: (
                                 <InputAdornment position='start'>
@@ -147,14 +172,10 @@ const CustomToolbar = ({
                 </FormControl>
             </div>
             <div>
-                <Button
-                    variant='outlined'
-                    className='rounded-md border-gray-300 text-gray-700 px-[11px] hover:border-gray-300 hover:bg-gray-100 cursor-pointer'
-                    onClick={registerUser}
-                >
+                <CustomRegistrationBtn variant='outlined' onClick={registerUser}>
                     <PlusIcon width={16} height={16} />
                     <div className='font-medium ml-1 pr-1 text-xs'>등록</div>
-                </Button>
+                </CustomRegistrationBtn>
             </div>
         </GridToolbarContainer>
     );

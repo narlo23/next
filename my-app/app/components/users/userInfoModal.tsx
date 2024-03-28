@@ -4,6 +4,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Button, Dialog, DialogContent } from '@mui/material';
 import { EllipsisHorizontalIcon } from '@heroicons/react/20/solid';
 import DialogHeader from '@/app/components/users/dialog/dialogHeader';
+import Buttons from '../buttons';
 
 const UserInfoModal = ({
     userInfo,
@@ -90,22 +91,7 @@ const UserInfoModal = ({
                         </div>
                     </div>
                 </DialogContent>
-                <div className='flex justify-end bg-gray-50 border-t-2 border-gray-100 p-5 text-sm'>
-                    <Button
-                        variant='outlined'
-                        className='w-24 rounded-md text-[#374151] bg-white border-1 border-gray-300 hover:bg-gray-100 hover:border-gray-300 py-[10px] leading-4'
-                        onClick={onClose}
-                    >
-                        취소
-                    </Button>
-                    <Button
-                        variant='contained'
-                        className='w-24 rounded-md bg-main-navy text-white hover:bg-secondary ml-2 py-[10px] leading-4'
-                        onClick={onClick}
-                    >
-                        수정
-                    </Button>
-                </div>
+                <Buttons leftBtnText='취소' rightBtnText='수정' onClose={onClose} onClick={onClick} />
             </Dialog>
         </div>
     );

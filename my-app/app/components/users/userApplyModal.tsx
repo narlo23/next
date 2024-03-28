@@ -1,9 +1,12 @@
 'use client';
 
 import React, { ChangeEvent, useEffect, useRef, useState } from 'react';
-import { Dialog, DialogContent, Button, TextField, styled, TextFieldProps } from '@mui/material';
+import { Dialog, DialogContent, Button, TextField, styled, TextFieldProps, ButtonProps } from '@mui/material';
 import DialogHeader from '@/app/components/users/dialog/dialogHeader';
 import { UserColumns } from '@/app/constants/data';
+import Buttons from '../buttons';
+import { useMutation } from 'react-query';
+import { addUser, modifyUser } from '@/app/api/user';
 
 const CustomTextField = styled(TextField)<TextFieldProps>(() => ({
     '& .MuiOutlinedInput-root': {
@@ -27,6 +30,24 @@ const CustomTextField = styled(TextField)<TextFieldProps>(() => ({
     },
     '& .Mui-disabled': {
         backgroundColor: '#f3f4f6',
+        color: '#d1d5db',
+    },
+}));
+
+const CustomDuplicateBtn = styled(Button)<ButtonProps>(() => ({
+    padding: '10px 15px',
+    color: '#374151',
+    fontSize: '14px',
+    display: 'flex',
+    lineHeight: '1rem',
+    borderColor: '#d1d5db',
+    marginLeft: '4px',
+    ':hover': {
+        borderColor: '#d1d5db',
+        backgroundColor: '#f3f4f6',
+    },
+    ':disabled': {
+        backgroundColor: '#f9fafb',
         color: '#d1d5db',
     },
 }));
@@ -82,13 +103,31 @@ const UserApplyModal = ({
     onClick,
     state,
     info,
+    refetch,
 }: {
     open: boolean;
     onClose: () => void;
     onClick: () => void;
     state: string;
     info?: any;
+    refetch?: any;
 }) => {
+    const addUserMutation = useMutation((data: UserInfo) => addUser(data), {
+        onError: (error) => {
+            console.error('Post 요청 실패', error);
+        },
+        onSuccess: () => {
+            refetch();
+        },
+    });
+    const modifyUserMutation = useMutation(({ id, data }: { id: number; data: UserInfo }) => modifyUser(id, data), {
+        onError: (error) => {
+            console.error('Post 요청 실패', error);
+        },
+        onSuccess: () => {
+            refetch();
+        },
+    });
     const [value, setValue] = useState<UserInfo>({
         name: '',
         username: '',
@@ -265,6 +304,16 @@ const UserApplyModal = ({
         }
     };
 
+    const AddUser = () => {
+        onClick();
+        addUserMutation.mutate(value);
+    };
+
+    const ModifyUser = () => {
+        onClick();
+        modifyUserMutation.mutate({ id: info.row.id, data: value });
+    };
+
     useEffect(() => {
         const handleClickOutside = (e: any) => {
             if (editProfileModal && (!modalRef.current || !modalRef.current.contains(e.target))) {
@@ -372,13 +421,18 @@ const UserApplyModal = ({
                                                 </label>
                                                 {userColumn.duplicateCheck ? (
                                                     state === 'user_register' ? (
-                                                        <div className='flex justify-between'>
+                                                        <div className='flex justify-between h-[38px] whitespace-nowrap'>
                                                             <CustomTextField
                                                                 name={userColumn.field}
                                                                 variant='outlined'
                                                                 fullWidth
                                                                 error={error[userColumn.field]}
                                                                 inputProps={{
+                                                                    inputMode: `${
+                                                                        userColumn.field === 'phone'
+                                                                            ? 'numeric'
+                                                                            : 'text'
+                                                                    }`,
                                                                     style: {
                                                                         fontSize: '0.75rem',
                                                                         padding: '10px 12px',
@@ -391,17 +445,15 @@ const UserApplyModal = ({
                                                                 value={value[userColumn.field]}
                                                                 onChange={InputText}
                                                                 placeholder={PLACEHOLDER_MSG[userColumn.field]}
-                                                                className='w-[205px]'
                                                             />
-                                                            <Button
+                                                            <CustomDuplicateBtn
                                                                 data-field={userColumn.field}
                                                                 variant='outlined'
-                                                                className='py-[10px] px-[15px] text-gray-700 text-sm flex leading-4 border-gray-300 hover:bg-gray-100 hover:border-gray-300 disabled:bg-gray-50 disabled:text-gray-300'
                                                                 disabled={disabledDuplicateBtn[userColumn.field]}
                                                                 onClick={CheckDuplicateUser}
                                                             >
                                                                 중복 확인
-                                                            </Button>
+                                                            </CustomDuplicateBtn>
                                                         </div>
                                                     ) : (
                                                         <div className='flex justify-between'>
@@ -471,23 +523,13 @@ const UserApplyModal = ({
                         </div>
                     </div>
                 </DialogContent>
-                <div className='flex justify-end bg-gray-50 border-t-2 border-gray-100 p-5 text-sm'>
-                    <Button
-                        variant='outlined'
-                        className='w-24 rounded-md text-[#374151] bg-white border-1 border-gray-300 hover:bg-gray-100 hover:border-gray-300 py-[10px] leading-4'
-                        onClick={onClose}
-                    >
-                        취소
-                    </Button>
-                    <Button
-                        variant='contained'
-                        className='w-24 rounded-md bg-main-navy text-white hover:bg-secondary ml-2 py-[10px] leading-4'
-                        disabled={applyDisabled}
-                        onClick={onClick}
-                    >
-                        {state === 'user_register' ? '등록' : '저장'}
-                    </Button>
-                </div>
+                <Buttons
+                    leftBtnText='취소'
+                    rightBtnText={state === 'user_register' ? '등록' : '저장'}
+                    onClose={onClose}
+                    onClick={state === 'user_register' ? AddUser : ModifyUser}
+                    disabled={applyDisabled}
+                />
             </Dialog>
         </div>
     );

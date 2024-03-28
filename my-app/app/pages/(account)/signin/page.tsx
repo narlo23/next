@@ -1,12 +1,13 @@
 'use client';
 
 import React, { useRef, useState } from 'react';
-import { IconButton, InputLabel, styled, InputLabelProps } from '@mui/material';
+import { IconButton, InputLabel, styled, InputLabelProps, ButtonProps } from '@mui/material';
 import { VisibilityOff, Visibility } from '@mui/icons-material';
 import { Button } from '@mui/material';
 import { ExclamationCircleIcon } from '@heroicons/react/20/solid';
 import { useRouter } from 'next/navigation';
 import { LogoIcon } from '@/app/components/icons';
+import SignInIcon from '@/app/components/icons/signin';
 
 const CustomInputLabel = styled(InputLabel)<InputLabelProps>(() => ({
     marginBottom: '4px',
@@ -15,6 +16,17 @@ const CustomInputLabel = styled(InputLabel)<InputLabelProps>(() => ({
     fontSize: '12px',
     lineHeight: '1.5rem',
     color: '#111827',
+}));
+
+const CustomLoginBtn = styled(Button)<ButtonProps>(() => ({
+    width: '100%',
+    backgroundColor: '#0d1c4b',
+    padding: '10px 15px',
+    borderRadius: '0.375rem',
+    fontSize: '1rem',
+    ':hover': {
+        backgroundColor: '#243d8d',
+    },
 }));
 
 const Login = () => {
@@ -56,12 +68,17 @@ const Login = () => {
         }
     };
 
+    const handleJoinNavigate = () => {
+        /* 회원가입 페이지로 이동 */
+        router.push('/pages/join/check');
+    };
+
     return (
-        <div className='flex flex-col justify-center flex-1 py-12 sm:px-6 lg:px-8 w-[920px] m-auto'>
-            <div className='pl-2 mb-4'>
-                <LogoIcon />
+        <div className='flex flex-col items-center justify-center flex-1 py-12 sm:px-6 lg:px-8 w-[920px] m-auto'>
+            <div className='pl-2 mb-4 w-full'>
+                <LogoIcon width='[192px]' />
             </div>
-            <div className='w-full h-[500px] flex flex-row shadow-md'>
+            <div className='h-[500px] flex flex-row rounded-3xl shadow-md'>
                 <div className='w-[472px] h-full rounded-l-3xl px-16 py-12 bg-white'>
                     <form>
                         <div className='text-main-navy mt-2 w-full text-primary font-bold text-lg'>로그인</div>
@@ -101,7 +118,9 @@ const Login = () => {
                                 <div className='cursor-pointer absolute top-0 right-0'>
                                     <IconButton
                                         aria-label='toggle password visibility'
-                                        className='text-gray-300'
+                                        sx={{
+                                            color: '#d1d5db',
+                                        }}
                                         onClick={handleClickShowPassword}
                                         onMouseDown={handleMouseDownPassword}
                                     >
@@ -122,17 +141,30 @@ const Login = () => {
                         <p className='text-sm text-main-navy underline cursor-pointer'>비밀번호 찾기</p>
                     </div>
                     <div className='mt-4'>
-                        <Button
+                        <CustomLoginBtn
+                            className='bg-main-navy'
                             type='button'
                             variant='contained'
-                            className='w-full bg-main-navy rounded-md text-base py-[10px] px-[15px] hover:bg-main-blue'
                             onClick={handleLoginClick}
                         >
                             <div className='flex text-sm leading-4'>로그인</div>
-                        </Button>
+                        </CustomLoginBtn>
+                    </div>
+                    <div className='mt-4 flex justify-center'>
+                        <p className='text-gray-600 text-sm'>아직 오피스넥스트 회원이 아니세요?</p>
+                    </div>
+                    <div className='flex items-center justify-center mt-1'>
+                        <div
+                            className='border-b cursor-pointer text-[#0d1d4b] border-[#0d1d4b] text-sm'
+                            onClick={handleJoinNavigate}
+                        >
+                            {'회원가입하기 >'}
+                        </div>
                     </div>
                 </div>
-                <div className='w-[388px] h-full rounded-r-3xl bg-main-navy'></div>
+                <div className='w-[388px] h-full rounded-r-3xl bg-main-navy'>
+                    <SignInIcon />
+                </div>
             </div>
             <div className='flex justify-between w-full p-3 mt-4'>
                 <div className='text-xs text-center text-gray-400'>Copyright 2024©JIRANSOFT All rights reserved.</div>

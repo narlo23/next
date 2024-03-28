@@ -1,11 +1,18 @@
-const LogoIcon = () => {
+import React from 'react';
+
+interface LogoIconProps {
+    width?: string;
+    height?: string;
+}
+
+const LogoIcon: React.FC<LogoIconProps> = ({ width = '40', height }) => {
     return (
         <svg
             xmlns='http://www.w3.org/2000/svg'
             viewBox='0 0 165 32'
             fill='none'
             aria-hidden='true'
-            className='w-40 h-8'
+            className={`${width ? `w-${width}` : ''} ${height ? `h-${height}` : ''}`}
         >
             <g clipPath='url(#clip0_4224_8814)'>
                 <path

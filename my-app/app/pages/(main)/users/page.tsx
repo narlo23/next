@@ -1,6 +1,17 @@
 'use client';
 import React, { useEffect, useState } from 'react';
-import { Button, Box, Pagination, Stack, Tooltip, Tabs, Tab, PaginationProps, TabsProps } from '@mui/material';
+import {
+    Button,
+    Box,
+    Pagination,
+    Stack,
+    Tooltip,
+    Tabs,
+    Tab,
+    PaginationProps,
+    TabsProps,
+    ButtonProps,
+} from '@mui/material';
 import CustomToolbar from '@/app/components/users/customToolbar';
 
 import {
@@ -36,6 +47,28 @@ interface UserData {
     phone?: string;
     createdAt?: Date;
 }
+
+const CustomSyncBtn = styled(Button)<ButtonProps>(() => ({
+    backgroundColor: '#0d1c4b !important',
+    margin: '0 8px',
+    padding: '8px 13px',
+    borderRadius: '0.375rem',
+    ':hover': {
+        backgroundColor: '#122e87 !important',
+    },
+}));
+
+const CustomRegistrationBtn = styled(Button)<ButtonProps>(() => ({
+    backgroundColor: 'white',
+    color: '#122e87',
+    borderColor: '#122e87',
+    padding: '8px 13px',
+    borderRadius: '0.375rem',
+    ':hover': {
+        borderColor: '#122e87',
+        backgroundColor: '#d5dbf0',
+    },
+}));
 
 const CustomDataGrid = styled(DataGrid)<DataGridProps>(() => ({
     '.MuiDataGrid-columnHeader': {
@@ -132,12 +165,28 @@ const fetchUserList = async () => {
     const users = await getUsers();
     let newUsers: UserData[] = [];
     users.map((user: any) => {
+        let address = '';
+        if (user.province !== null) {
+            address += user.province + ' ';
+        }
+        if (user.city !== null) {
+            address += user.city + ' ';
+        }
+        if (user.district !== null) {
+            address += user.district + ' ';
+        }
+        if (user.street !== null) {
+            address += user.street + ' ';
+        }
+        if (user.zipcode !== null) {
+            address += user.zipcode + ' ';
+        }
         newUsers.push({
             id: user.id,
             name: user.name,
             username: user.username,
             email: user.email,
-            address: user.province + ' ' + user.city + ' ' + user.district + ' ' + user.street + ' ' + user.zipcode,
+            address: address,
             phone: user.phone,
             createdAt: user.createdAt,
         });
@@ -148,7 +197,7 @@ const fetchUserList = async () => {
 const User = () => {
     const [selectedMenu, setSelectedMenu] = useState('user_management');
     const [date, setDate] = useState<string>('');
-    const { isLoading, error, data } = useQuery('userlist', fetchUserList, {
+    const { data, refetch } = useQuery('userlist', fetchUserList, {
         refetchOnWindowFocus: false,
     });
     const [filteredData, setFilteredData] = useState<UserData[]>([]);
@@ -245,6 +294,7 @@ const User = () => {
                         onClose={closeModal}
                         state={modalContent}
                         onClick={registerUserResult}
+                        refetch={refetch}
                     />
                 );
             } else if (modalContent === 'user_modify') {
@@ -257,6 +307,7 @@ const User = () => {
                             state={modalContent}
                             info={modalParams}
                             onClick={storeModifyResult}
+                            refetch={refetch}
                         />
                     );
                 }
@@ -337,13 +388,10 @@ const User = () => {
                 <div className='flex justify-between mb-8'>
                     <div className='flex items-center'>
                         <div className='text-2xl font-bold text-gray-900'>사용자</div>
-                        <Button
-                            variant='contained'
-                            className='bg-[#0d1c4b] mx-2 py-2 px-[13px] rounded-md hover:bg-secondary'
-                        >
+                        <CustomSyncBtn variant='contained'>
                             <ArrowPathIcon width={16} height={16} className='mr-1' />
                             <div className='flex leading-4'>조직도 동기화</div>
-                        </Button>
+                        </CustomSyncBtn>
                         <div className='text-gray-400 flex items-center'>
                             <Tooltip
                                 title={SYNC_INFO_TEXT}
@@ -366,13 +414,10 @@ const User = () => {
                         </div>
                     </div>
                     <div>
-                        <Button
-                            variant='outlined'
-                            className='bg-white text-secondary border-secondary hover:border-secondary hover:bg-[#d5dbf0] py-2 px-[13px] rounded-md'
-                        >
+                        <CustomRegistrationBtn variant='outlined'>
                             <PlusIcon width={16} height={16} className='mr-1' />
-                            <div className='flex leading-4'>엑셀 일괄 등록</div>
-                        </Button>
+                            <div className='flex leading-4 text-xs'>엑셀 일괄 등록</div>
+                        </CustomRegistrationBtn>
                     </div>
                 </div>
                 <Box>

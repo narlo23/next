@@ -5,8 +5,38 @@ import 'slick-carousel/slick/slick-theme.css';
 
 import { ExclamationCircleIcon, PlusIcon } from '@heroicons/react/20/solid';
 import { ChevronRightIcon } from '@heroicons/react/20/solid';
-import { Button } from '@mui/material';
+import { Button, styled, ButtonProps } from '@mui/material';
 import Slider from 'react-slick';
+
+const CustomAddBtn = styled(Button)<ButtonProps>(() => ({
+    borderColor: '#d1d5db',
+    backgroundColor: 'white',
+    fontSize: '12px',
+    fontWeight: 'medium',
+    color: '#374151',
+    padding: '10px 23px',
+    lineHeight: '1rem',
+    borderRadius: '0.375rem',
+    ':hover': {
+        backgroundColor: 'white',
+        borderColor: '#d1d5db',
+    },
+}));
+
+const CustomServicePageBtn = styled(Button)<ButtonProps>(() => ({
+    backgroundColor: 'white',
+    width: '96px',
+    fontSize: '12px',
+    lineHeight: '1rem',
+    padding: '5px 11px',
+    borderColor: '#d1d5db',
+    color: '#374151',
+    borderRadius: '0.375rem',
+    ':hover': {
+        backgroundColor: 'white',
+        borderColor: '#d1d5db',
+    },
+}));
 
 const DashBoard = () => {
     const username = '안효진';
@@ -86,12 +116,7 @@ const DashBoard = () => {
                                 <div className='text-2xl text-gray-600'>명</div>
                             </div>
                             <div>
-                                <Button
-                                    variant='outlined'
-                                    className='border-gray-300 bg-white text-xs font-medium text-gray-700 py-[10px] px-[23px] rounded-md hover:border-gray-300 hover:bg-white'
-                                >
-                                    추가하기
-                                </Button>
+                                <CustomAddBtn variant='outlined'>추가하기</CustomAddBtn>
                             </div>
                         </div>
                         <div className='text-lg text-gray-600 flex ml-[10px]'>
@@ -235,7 +260,7 @@ const DashBoard = () => {
                                     ></path>
                                 </svg>
                             </div>
-                            <Button
+                            <CustomServicePageBtn
                                 variant='outlined'
                                 className='bg-white w-24 rounded-md text-xs px-[11px] border-gray-300 text-gray-700 hover:border-gray-300 hover:bg-white'
                                 onClick={() => {
@@ -243,7 +268,7 @@ const DashBoard = () => {
                                 }}
                             >
                                 서비스페이지
-                            </Button>
+                            </CustomServicePageBtn>
                         </div>
                     </div>
                     <div className='w-full mr-4 flex flex-col bg-white shadow h-36 rounded-xl'>
@@ -279,15 +304,14 @@ const DashBoard = () => {
                                     ></path>
                                 </svg>
                             </div>
-                            <Button
+                            <CustomServicePageBtn
                                 variant='outlined'
-                                className='bg-white w-24 rounded-md text-xs px-[11px] border-gray-300 text-gray-700 hover:border-gray-300 hover:bg-white'
                                 onClick={() => {
                                     window.open('https://www.officenote.co.kr/dashboard');
                                 }}
                             >
                                 서비스페이지
-                            </Button>
+                            </CustomServicePageBtn>
                         </div>
                     </div>
                 </div>

@@ -5,22 +5,46 @@ import Navbar from '@/app/components/navbar';
 import { useEffect, useState } from 'react';
 import { redirect } from 'next/navigation';
 
+interface MenuItemProps {
+    id: string | null;
+    subid: string | null;
+}
+
 const MainLayout = ({
     children,
 }: Readonly<{
     children: React.ReactNode;
 }>) => {
-    const [selectedMenu, setSelectedMenu] = useState({ id: 'dashboard', subid: '' });
+    const [selectedMenu, setSelectedMenu] = useState<MenuItemProps>({
+        id:
+            typeof window !== 'undefined' && sessionStorage.getItem('id') !== undefined
+                ? sessionStorage.getItem('id')
+                : 'dashboard',
+        subid:
+            typeof window !== 'undefined' && sessionStorage.getItem('subid') !== undefined
+                ? sessionStorage.getItem('subid')
+                : '',
+    });
+
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const login = localStorage.getItem('login');
-        if (!login) {
-            redirect('/pages/signin');
-        } else {
-            setLoading(false);
+        if (typeof window !== 'undefined') {
+            const login = localStorage.getItem('login');
+            if (!login) {
+                redirect('/pages/signin');
+            } else {
+                setLoading(false);
+            }
+            sessionStorage.setItem('id', 'dashboard');
+            sessionStorage.setItem('subid', '');
         }
     }, []);
+
+    useEffect(() => {
+        sessionStorage.setItem('id', selectedMenu.id || '');
+        sessionStorage.setItem('subid', selectedMenu.subid || '');
+    }, [selectedMenu]);
 
     return !loading ? (
         <div className='h-screen w-screen bg-gray-50 flex flex-col leading-4'>
