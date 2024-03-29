@@ -3,3 +3,7 @@ export { default as GroupIcon } from './group';
 export { default as LogoIcon } from './logo';
 export { default as OperateIcon } from './operate';
 export { default as ServiceIcon } from './service';
+export { default as CloseIcon } from './close';
+export { default as SignInIcon } from './signin';
+export { default as ErrorIcon } from './error';
+export { default as EditIcon } from './edit';

@@ -41,7 +41,7 @@ const CustomServicePageBtn = styled(Button)<ButtonProps>(() => ({
 const DashBoard = () => {
     const username = '안효진';
 
-    var settings = {
+    const settings = {
         dots: true,
         infinite: true,
         slidesToShow: 1,
@@ -206,7 +206,7 @@ const DashBoard = () => {
                 </div>
                 <div className='col-span-2 drop-shadow-sm bg-white border p-6 rounded-lg h-[254px]'>
                     <div className='w-full h-full'>
-                        <Slider arrows={false} {...settings}>
+                        <Slider arrows={false} {...settings} className='w-full '>
                             <img src='/assets/banner/banner_1.png' alt='banner' className='rounded-lg' />
                             <img src='/assets/banner/banner_2.png' alt='banner' className='rounded-lg' />
                         </Slider>

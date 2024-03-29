@@ -8,6 +8,7 @@ import { ExclamationCircleIcon } from '@heroicons/react/20/solid';
 import { useRouter } from 'next/navigation';
 import { LogoIcon } from '@/app/components/icons';
 import SignInIcon from '@/app/components/icons/signin';
+import Link from 'next/link';
 
 const CustomInputLabel = styled(InputLabel)<InputLabelProps>(() => ({
     marginBottom: '4px',
@@ -68,15 +69,10 @@ const Login = () => {
         }
     };
 
-    const handleJoinNavigate = () => {
-        /* 회원가입 페이지로 이동 */
-        router.push('/pages/join/check');
-    };
-
     return (
         <div className='flex flex-col items-center justify-center flex-1 py-12 sm:px-6 lg:px-8 w-[920px] m-auto'>
             <div className='pl-2 mb-4 w-full'>
-                <LogoIcon width='[192px]' />
+                <LogoIcon props='w-[192px]' />
             </div>
             <div className='h-[500px] flex flex-row rounded-3xl shadow-md'>
                 <div className='w-[472px] h-full rounded-l-3xl px-16 py-12 bg-white'>
@@ -154,12 +150,11 @@ const Login = () => {
                         <p className='text-gray-600 text-sm'>아직 오피스넥스트 회원이 아니세요?</p>
                     </div>
                     <div className='flex items-center justify-center mt-1'>
-                        <div
-                            className='border-b cursor-pointer text-[#0d1d4b] border-[#0d1d4b] text-sm'
-                            onClick={handleJoinNavigate}
-                        >
-                            {'회원가입하기 >'}
-                        </div>
+                        <Link href='join/check'>
+                            <div className='border-b cursor-pointer text-[#0d1d4b] border-[#0d1d4b] text-sm'>
+                                {'회원가입하기 >'}
+                            </div>
+                        </Link>
                     </div>
                 </div>
                 <div className='w-[388px] h-full rounded-r-3xl bg-main-navy'>

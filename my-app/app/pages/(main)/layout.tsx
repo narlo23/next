@@ -6,8 +6,8 @@ import { useEffect, useState } from 'react';
 import { redirect } from 'next/navigation';
 
 interface MenuItemProps {
-    id: string | null;
-    subid: string | null;
+    id: string;
+    subid: string;
 }
 
 const MainLayout = ({
@@ -17,12 +17,12 @@ const MainLayout = ({
 }>) => {
     const [selectedMenu, setSelectedMenu] = useState<MenuItemProps>({
         id:
-            typeof window !== 'undefined' && sessionStorage.getItem('id') !== undefined
-                ? sessionStorage.getItem('id')
+            typeof window !== 'undefined' && sessionStorage.getItem('id') !== null
+                ? sessionStorage.getItem('id')!
                 : 'dashboard',
         subid:
-            typeof window !== 'undefined' && sessionStorage.getItem('subid') !== undefined
-                ? sessionStorage.getItem('subid')
+            typeof window !== 'undefined' && sessionStorage.getItem('subid') !== null
+                ? sessionStorage.getItem('subid')!
                 : '',
     });
 
@@ -42,8 +42,8 @@ const MainLayout = ({
     }, []);
 
     useEffect(() => {
-        sessionStorage.setItem('id', selectedMenu.id || '');
-        sessionStorage.setItem('subid', selectedMenu.subid || '');
+        sessionStorage.setItem('id', selectedMenu.id);
+        sessionStorage.setItem('subid', selectedMenu.subid);
     }, [selectedMenu]);
 
     return !loading ? (

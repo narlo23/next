@@ -57,7 +57,7 @@ const Navbar = ({
 
     return (
         <div className='flex-1 z-10 w-64 bg-white pb-4 overflow-y-auto flex flex-col'>
-            <nav className='mt-2 flex-1 text-main-navy '>
+            <nav className='mt-2 flex-1 text-[#0d1c4b] '>
                 {MenuItem.map((menu: any, i: number) => {
                     return (
                         <div key={i}>
@@ -99,7 +99,13 @@ const Navbar = ({
                                         >
                                             {selectIcon(menu.icon)}
                                         </div>
-                                        <p className='w-full'>{menu.name}</p>
+                                        <p
+                                            className={`w-full ${
+                                                selected.id === menu.id && selected.subid !== '' && 'text-secondary'
+                                            }`}
+                                        >
+                                            {menu.name}
+                                        </p>
                                         {
                                             /* 상세 메뉴 있는 경우 화살표 렌더링 */
                                             menu.detail.length > 0 &&

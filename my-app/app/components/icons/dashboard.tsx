@@ -1,14 +1,17 @@
-const DashBoardIcon = () => {
+const DashBoardIcon = ({ width, height, color }: { width?: number; height?: number; color?: string }) => {
     return (
         <svg
             xmlns='http://www.w3.org/2000/svg'
             fill='none'
+            width={width}
+            height={height}
             viewBox='0 0 25 24'
             strokeWidth='2'
             stroke='currentColor'
             aria-hidden='true'
         >
             <path
+                fill={color}
                 strokeLinecap='round'
                 strokeLinejoin='round'
                 strokeMiterlimit='10'

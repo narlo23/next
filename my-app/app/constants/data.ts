@@ -150,3 +150,16 @@ export const UserColumns = [
         duplicateCheck: false,
     },
 ];
+
+export const ERROR_MSG = {
+    name: '이름을 입력해주세요.',
+    username: '유저명을 입력해주세요.',
+    phone: '전화번호를 입력해주세요.',
+    email: '이메일을 입력해주세요.',
+    address: '주소를 입력해주세요.',
+};
+
+export const PLACEHOLDER_MSG: { username: string; email: string; [key: string]: string } = {
+    username: '유저명을 입력하세요.',
+    email: '이메일을 입력하세요.',
+};

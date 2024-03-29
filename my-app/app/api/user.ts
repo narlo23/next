@@ -52,6 +52,7 @@ export const modifyUser = async (id: number, userData: any) => {
     /* 수정할 정보 넘겨주기 */
     try {
         const date = new Date();
+        userData['city'] = userData['address'];
         userData['updatedAt'] = date;
         const res = await axios.put(API_END_POINT + `users/${id}`, userData);
         return res.data;

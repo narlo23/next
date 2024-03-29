@@ -166,21 +166,22 @@ const fetchUserList = async () => {
     let newUsers: UserData[] = [];
     users.map((user: any) => {
         let address = '';
-        if (user.province !== null) {
+        if (user.province !== '') {
             address += user.province + ' ';
         }
         if (user.city !== null) {
             address += user.city + ' ';
         }
-        if (user.district !== null) {
+        if (user.district !== '') {
             address += user.district + ' ';
         }
-        if (user.street !== null) {
+        if (user.street !== '') {
             address += user.street + ' ';
         }
-        if (user.zipcode !== null) {
+        if (user.zipcode !== '') {
             address += user.zipcode + ' ';
         }
+        address.trim();
         newUsers.push({
             id: user.id,
             name: user.name,
